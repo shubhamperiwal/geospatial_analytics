@@ -1,0 +1,221 @@
+---
+title: "Project - Phase 2"
+output: html_notebook
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('sf', 'tmap', 'ggmap', 'rgdal', 'tidyverse', 'qdapTools')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses <- read_csv('data/resale-flat-prices/all_flats.csv')
+mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
+```
+
+#Merge HOUSES to MPSZ 
+
+```{r echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
+mpsz_sf <- st_as_sf(mpsz) 
+st_crs(houses_sf) <- st_crs(mpsz_sf)
+
+houses_4326 <- st_transform(houses_sf, crs=4326)
+mpsz_4326 <- st_transform(mpsz_sf, crs = 4326)
+```
+
+Merge aspatial and spatial data
+
+```{r echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
+merge_spat_aspat <- st_join(mpsz_4326,houses_4326, join=st_intersects)
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```

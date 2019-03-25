@@ -1,0 +1,25 @@
+With lat,long
+busstop
+chas-clinics-kml
+hawker-centres-kml
+lta-mrt-station-exit-kml
+NATIONALPARKS
+pre-schools-location-kml
+TaxiStop
+
+With Address & postal code:
+general-information-of-schools
+healthcare_facilities
+
+
+
+Sources
+https://data.gov.sg/dataset/hawker-centres
+https://data.gov.sg/dataset/chas-clinics?resource_id=21dace06-c4d1-4128-9424-aba7668050dc
+https://data.gov.sg/dataset/school-directory-and-information?view_id=ba7c477d-a077-4303-96a1-ac1d4f25b190&resource_id=ede26d32-01af-4228-b1ed-f05c45a1d8ee
+https://data.gov.sg/dataset/pre-schools-location
+https://data.gov.sg/dataset/parks
+https://data.gov.sg/dataset/lta-mrt-station-exit
+https://www.mytransport.sg/content/mytransport/home/dataMall/static-data.html#Whole%20Island
+http://www.hospitals.sg/hospitals
+http://www.hospitals.sg/polyclinics#polyclinics-list-address

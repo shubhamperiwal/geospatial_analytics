@@ -1,0 +1,43 @@
+---
+title: "Project - Phase 2"
+output: html_notebook
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('sf', 'tmap', 'ggmap', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_group_hawker <- read_csv('data/resale-flat-prices/all_flats_grouped_hawker.csv')
+houses_grouped_sf <- st_as_sf(houses_group_hawker, coords = c("lon", "lat"))
+houses_grouped_sf <- st_set_crs(houses_grouped_sf, 4326)
+houses_grouped_sf <- st_transform(houses_grouped_sf, 3414)
+
+
+mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+ogrListLayers("data/hawker-centres/hawker-centres-kml.kml")
+hawker_centres <- readOGR(dsn="data/hawker-centres/hawker-centres-kml.kml", layer='HAWKERCENTRE')
+
+hc_sf <- st_as_sf(hawker_centres)
+hc_sf <- st_set_crs(hc_sf, 4326)
+hc_sf <- st_transform(hc_sf, 3414)
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+tmap_mode('plot')
+tm_shape(mpsz) + tm_polygons() + 
+  tm_shape(houses_grouped_sf) +
+    tm_dots(col='min_hawker',
+            style='quantile',
+            size=0.5)
+```

@@ -1,0 +1,77 @@
+---
+title: "Project - Phase 2"
+output: html_notebook
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('sf', 'tmap', 'ggmap', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_grouped <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
+houses_grouped_sf <- st_as_sf(houses_grouped, coords = c("lon", "lat"))
+houses_grouped_sf <- st_set_crs(houses_grouped_sf, 4326)
+houses_grouped_sf <- st_transform(houses_grouped_sf, 3414)
+
+houses_grouped_df <- as.data.frame(st_coordinates(houses_grouped_sf))
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+ogrListLayers("data/hawker-centres/hawker-centres-kml.kml")
+hawker_centres <- readOGR(dsn="data/hawker-centres/hawker-centres-kml.kml", layer='HAWKERCENTRE')
+
+hc_sf <- st_as_sf(hawker_centres)
+hc_sf <- st_set_crs(hc_sf, 4326)
+hc_sf <- st_transform(hc_sf, 3414)
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#Create lon,lat from hawker centres
+hc_df <- as.data.frame(st_coordinates(hc_sf))
+hc_df <- hc_df[,c(1,2)]
+
+st_crs(houses_grouped_sf)
+st_crs(hc_sf)
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#Calculate distance matrix
+dist_matrix <- as.data.frame(crossdist(houses_grouped_df$X, houses_grouped_df$Y, hc_df$X, hc_df$Y))
+
+head(dist_matrix)
+#get min of all columns
+dist_matrix$min_dist <- apply(dist_matrix,1,min)
+dist_matrix$group <- houses_grouped$group_id
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#ADd to houses df
+houses_grouped$min_hawker <- dist_matrix$min_dist
+houses <- inner_join(houses, houses_grouped[4:5], by='group_id')
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#Add to CSV 
+#write.csv(houses, 'data/resale-flat-prices/all_flats_with_group_hawker.csv')
+#write.csv(houses_grouped, 'data/resale-flat-prices/all_flats_grouped_hawker.csv')
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```

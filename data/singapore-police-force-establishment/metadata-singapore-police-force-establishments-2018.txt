@@ -1,0 +1,37 @@
+# Metadata for Singapore Police Force Establishments (2018)
+---
+Identifier: 'acfa67a7-4375-4290-b1d4-1dcd7cc813fb'
+Name: 'singapore-police-force-establishments-2018'
+Title: 'Singapore Police Force Establishments (2018)'
+Description: 'Singapore Police Force Establishment Details'
+Topics:
+  - 'Infrastructure'
+Keywords:
+  - 'SPF'
+  - 'Singapore Police Force Establishment'
+  - 'onemap'
+  - 'themes'
+Publisher:
+  Name: 'Ministry of Home Affairs - Singapore Police Force'
+  Admin 1:
+    Name: 'Benson Lim'
+    Department: 'SINGAPORE POLICE FORCE'
+    Email: 'benson_lim@spf.gov.sg'
+Sources:
+  - 'Ministry of Home Affairs - Singapore Police Force'
+License: 'https://data.gov.sg/open-data-licence'
+Frequency: 'Ad-hoc'
+Last Updated: '2019-01-24T10:00:25.465580'
+Resources:
+  -
+    Identifier: 'fa622d06-86b9-4a2d-9110-0ada9fc6c292'
+    Title: 'Singapore Police Force Establishments (2018) (KML)'
+    Url: 'https://geo.data.gov.sg/spf-establishments-2018/2018/11/25/kml/spf-establishments-2018.kml'
+    Format: 'KML'
+    Last Updated: '2018-11-24T16:00:00'
+  -
+    Identifier: 'b8a6847b-e092-41f0-8ae4-b0d2767be186'
+    Title: 'Singapore Police Force Establishments (2018) (GEOJSON)'
+    Url: 'https://geo.data.gov.sg/spf-establishments-2018/2018/11/25/geojson/spf-establishments-2018.geojson'
+    Format: 'GeoJSON'
+    Last Updated: '2018-11-24T16:00:00'
