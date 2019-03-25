@@ -1,0 +1,289 @@
+---
+title: "Project - Phase 2"
+output: html_notebook
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('tmap', 'ggmap', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr', 'sf')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
+mpsz_sf <- st_as_sf(mpsz)
+mpsz_sf <- st_transform(mpsz_sf, 4326)
+mpsz_sf <- mpsz_sf %>% select(SUBZONE_NO, SUBZONE_N, REGION_N, geometry)
+
+
+houses <- read_csv('data/resale-flat-prices/all_flats.csv')
+houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
+st_crs(houses_sf) <- st_crs(mpsz_sf)
+```
+
+# Add Subzone
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+joined_df <- st_join(mpsz_sf, houses_sf, join=st_intersects)
+joined_df <- na.omit(joined_df) 
+joined_df <- joined_df[,c(1:4)]
+st_geometry(joined_df) <- NULL
+
+houses <- left_join(houses, joined_df)
+
+write_csv(houses, 'data/resale-flat-prices/all_flats_updated.csv')
+```
+
+# Create grouped HDBs
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_group <- houses %>% group_by(Street) %>% summarise(lon = mean(lon), lat=mean(lat))
+houses_group$group_id <- c(1:length(unique(houses_group$Street)))
+houses_group_ids <- houses_group[, c("group_id", "Street")]
+
+houses <- inner_join(houses, houses_group_ids)
+#write_csv(houses, 'data/resale-flat-prices/all_flats_updated.csv')
+
+#write_csv(houses_group, 'data/resale-flat-prices/all_flats_grouped.csv')
+```
+
+# Add subzone to grouped HDBs
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_group <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
+houses<- read_csv('data/resale-flat-prices/all_flats_updated.csv')
+
+houses <- houses %>% select(c(X1, SUBZONE_NO, SUBZONE_N, REGION_N))
+houses_group <- inner_join(houses_group, houses)
+
+write_csv(houses_group, 'data/resale-flat-prices/all_flats_grouped.csv')
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+
+
+```
+
+
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+joined_df <- st_join(mpsz_sf, houses_sf, join=st_intersects)
+houses <- na.omit(joined_df)
+write_csv(houses, 'data/resale-flat-prices/all_flats_with_subzone.csv')
+
+houses_hawker <- read_csv('data/resale-flat-prices/all_flats_with_group_hawker.csv')
+houses$min_hawker <- houses_hawker$min_hawker
+write_csv(houses, 'data/resale-flat-prices/all_flats_with_group_hawker.csv')
+
+
+join_group <- st_join(mpsz_sf, houses_group_hawk_sf, join=st_intersects)
+houses_group_hawk <- na.omit(join_group)
+
+write_csv(houses_group_hawk, 'data/resale-flat-prices/all_flats_grouped_hawker.csv')
+``` 
+
+
+
+
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#Add group ID to each house
+houses_sep <- houses %>% separate(address, c("Street", "Block"), sep="block")
+houses_group <- houses_sep %>% group_by(Street) %>% summarise(lon = mean(lon), lat=mean(lat))
+houses_group$group_id <- c(1:length(unique(houses_group$Street)))
+
+houses$Street <- houses_sep$Street
+houses_group_ids <- houses_group[, c("group_id", "Street")]
+
+write_csv(houses_group, 'data/resale-flat-prices/all_grouped_flats.csv')
+houses <- inner_join(houses, houses_group_ids)
+write_csv(houses, 'data/resale-flat-prices/all_flats_with_group.csv')
+
+houses_group_test <- houses_group[1:5, ]
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```

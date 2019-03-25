@@ -14,6 +14,8 @@ for (p in packages){
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+houses <- read_csv('data/resale-flat-prices/all_flats_updated.csv')
 houses_grouped <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
 houses_grouped_sf <- st_as_sf(houses_grouped, coords = c("lon", "lat"))
 houses_grouped_sf <- st_set_crs(houses_grouped_sf, 4326)
@@ -60,8 +62,8 @@ houses <- inner_join(houses, houses_grouped[4:5], by='group_id')
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 #Add to CSV 
-#write.csv(houses, 'data/resale-flat-prices/all_flats_with_group_hawker.csv')
-#write.csv(houses_grouped, 'data/resale-flat-prices/all_flats_grouped_hawker.csv')
+#write.csv(houses, 'data/resale-flat-prices/all_flats_updated.csv')
+#write.csv(houses_grouped, 'data/resale-flat-prices/all_flats_grouped.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
