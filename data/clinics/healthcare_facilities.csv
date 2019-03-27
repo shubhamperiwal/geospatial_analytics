@@ -1,30 +1,30 @@
-facility_name,address,postal_code
-Ang Mo Kio Polyclinic,Block 723 Ang Mo Kio Avenue 8,560723
-Bedok Polyclinic,Block 212 Bedok North Street 1,460212
-Bukit Batok Polyclinic,50 Bukit Batok West Avenue 3,659164
-Bukit Merah Polyclinic,Block 163 Bukit Merah Central,150163
-Choa Chu Kang Polyclinic,2 Teck Whye Crescent,688846
-Clementi Polyclinic,Block 451 Clementi Avenue 3,120451
-Geylang Polyclinic,21 Geylang East Central,389707
-Hougang Polyclinic,89 Hougang Avenue 4,538829
-Jurong Polyclinic,190 Jurong East Avenue 1,609788
-Marine Parade Polyclinic,Block 80 Marine Parade,440080
-Outram Polyclinic,3 Second Hospital Ave,168937
-Pasir Ris Polyclinic,1 Pasir Ris Drive 4,519457
-Queenstown Polyclinic,580 Stirling Road,148958
-Sengkang Polyclinic,2 Sengkang Square,545025
-Tampines Polyclinic,1 Tampines Street 41,529203
-Toa Payoh Polyclinic,Block 2003 Lorong 8 Toa Payoh,319260
-Woodlands Polyclinic,10 Woodlands Street 31,738579
-Yishun Polyclinic,2 Yishun Ave 9,768898
-Changi General Hospital,2 Simei Street 3,529889
-Gleneagles Hospital,6A Napier Rd,258500
-Khoo Teck Puat Hospital,90 Yishun Central,768828
-Mount Alvernia Hospital,820 Thomson Rd,574623
-National University Hospital,5 Lower Kent Ridge Rd,119074
-Jurong Community Hospital,1 Jurong East Street 21,609606
-Parkway East Hospital,321 Joo Chiat Place,427990
-Raffles Hospital,585 North Bridge Rd,188770
-Sengkang General Hospital,110 Sengkang E Way,544886
-Singapore General Hospital,Outram Rd,169608
-Tan Tock Seng Hospital,11 Jalan Tan Tock Seng,308433
+facility_name,address,postal_code,lon,lat
+Ang Mo Kio Polyclinic,Block 723 Ang Mo Kio Avenue 8 Singapore,560723,103.847305,1.3724019
+Bedok Polyclinic,Block 212 Bedok North Street 1 Singapore,460212,103.9315673,1.3259988
+Bukit Batok Polyclinic,50 Bukit Batok West Avenue 3 Singapore,659164,103.747924,1.351972
+Bukit Merah Polyclinic,Block 163 Bukit Merah Central Singapore,150163,103.8170072,1.2837537
+Choa Chu Kang Polyclinic,2 Teck Whye Crescent Singapore,688846,103.7507302,1.3823883
+Clementi Polyclinic,Block 451 Clementi Avenue 3 Singapore,120451,103.7656225,1.3126424
+Geylang Polyclinic,21 Geylang East Central Singapore,389707,103.887168,1.3195933
+Hougang Polyclinic,89 Hougang Avenue 4 Singapore,538829,103.889024,1.370032
+Jurong Polyclinic,190 Jurong East Avenue 1 Singapore,609788,103.730619,1.349792
+Marine Parade Polyclinic,Block 80 Marine Parade Singapore,440080,103.9051552,1.3014702
+Outram Polyclinic,3 Second Hospital Ave Singapore,168937,103.8383881,1.2799858
+Pasir Ris Polyclinic,1 Pasir Ris Drive 4 Singapore,519457,103.959529,1.368309
+Queenstown Polyclinic,580 Stirling Road Singapore,148958,103.800959,1.298484
+Sengkang Polyclinic,2 Sengkang Square Singapore,545025,103.894009,1.3928234
+Tampines Polyclinic,1 Tampines Street 41 Singapore,529203,103.9458665,1.3573037
+Toa Payoh Polyclinic,Block 2003 Lorong 8 Toa Payoh Singapore,319260,103.858986,1.3345499
+Woodlands Polyclinic,10 Woodlands Street 31 Singapore,738579,103.775072,1.430806
+Yishun Polyclinic,2 Yishun Ave 9 Singapore,768898,103.8392427,1.4304452
+Changi General Hospital,2 Simei Street 3 Singapore,529889,103.9498258,1.341073
+Gleneagles Hospital,6A Napier Rd Singapore,258500,103.8198871,1.3076528
+Khoo Teck Puat Hospital,90 Yishun Central Singapore,768828,103.8380168,1.4244482
+Mount Alvernia Hospital,820 Thomson Rd Singapore,574623,103.8379548,1.3419083
+National University Hospital,5 Lower Kent Ridge Rd Singapore,119074,103.7832169,1.2939757
+Jurong Community Hospital,1 Jurong East Street 21 Singapore,609606,103.7452086,1.333841
+Parkway East Hospital,321 Joo Chiat Place Singapore,427990,103.9089728,1.3151065
+Raffles Hospital,585 North Bridge Rd Singapore,188770,103.8572771,1.3011894
+Sengkang General Hospital,110 Sengkang E Way Singapore,544886,103.8934028,1.3954927
+Singapore General Hospital,Outram Rd Singapore,169608,103.8359684,1.2833414
+Tan Tock Seng Hospital,11 Jalan Tan Tock Seng Singapore,308433,103.8485777,1.3205612

@@ -154,3 +154,14 @@ houses_group$group_id <- c(1:length(unique(houses_group$Street)))
 
 write_csv(houses_group, 'data/resale-flat-prices/all_flats_grouped.csv')
 ``` 
+
+
+# GEOCODE CLINICS 
+
+```{r}
+clinics <- read_csv('data/clinics/healthcare_facilities.csv')
+clinics$address <- paste(clinics$address, "Singapore")
+clinics_location <- mutate_geocode(clinics, address)
+
+write_csv(clinics_location, 'data/clinics/healthcare_facilities.csv')
+```

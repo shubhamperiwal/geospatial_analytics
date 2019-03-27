@@ -1,0 +1,51 @@
+---
+title: "Project - Phase 2"
+output: html_notebook
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('sf', 'tmap', 'ggmap', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_group_hawker <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
+houses_grouped_sf <- st_as_sf(houses_group_hawker, coords = c("lon", "lat"))
+
+mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
+mpsz_sf <- st_as_sf(mpsz)
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+ogrListLayers("data/hawker-centres/hawker-centres-kml.kml")
+hawker_centres <- readOGR(dsn="data/hawker-centres/hawker-centres-kml.kml", layer='HAWKERCENTRE')
+
+hc_sf <- st_as_sf(hawker_centres)
+hc_sf <- st_set_crs(hc_sf, 4326)
+hc_sf <- st_transform(hc_sf, 3414)
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+tmap_mode('plot')
+tm_shape(mpsz) + tm_polygons() + 
+  tm_shape(houses_grouped_sf) +
+    tm_dots(col='min_clinic',
+            style='quantile',
+            size=0.5)
+```
+
+#Create the plot on a subzone level
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_agg <- houses_grouped_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_clinic))
+
+ggplot(houses_agg, aes(x = SUBZONE_N, mean_dist)) + 
+  geom_col() + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
