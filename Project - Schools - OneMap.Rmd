@@ -1,0 +1,221 @@
+---
+title: "Project - Schools - OneMap"
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('sf', 'rgdal', 'tidyverse', 'spatstat', 'readr', 'httr')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses <- read_csv('data/resale-flat-prices/all_flats_updated.csv')
+houses_grouped <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
+houses_grouped_sf <- st_as_sf(houses_grouped, coords = c("lon", "lat"))
+
+houses_grouped_df <- as.data.frame(st_coordinates(houses_grouped_sf))
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+schools <- read_csv('data/schools/schools.csv')
+
+schools_sf <- st_as_sf(schools, coords = c("lon", "lat"))
+schools_df <- as.data.frame(st_coordinates(schools_sf))
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+dist_matrix <- as.data.frame(crossdist(houses_grouped_df$X, houses_grouped_df$Y, schools_df$X, schools_df$Y))
+
+head(dist_matrix)
+#get min of all columns
+dist_matrix$min_dist_which <- apply(dist_matrix,1,which.min)
+
+houses_grouped_df$dist_which <- dist_matrix$min_dist_which
+houses_grouped_df$school_X <- schools_df$X[houses_grouped_df$dist_which]
+houses_grouped_df$school_Y <- schools_df$Y[houses_grouped_df$dist_which]
+dist_matrix$group <- houses_grouped$group_id
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+onemap_token <- "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjI1MzksInVzZXJfaWQiOjI1MzksImVtYWlsIjoic2h1YmhhbXAuMjAxNkBzaXMuc211LmVkdS5zZyIsImZvcmV2ZXIiOmZhbHNlLCJpc3MiOiJodHRwOlwvXC9vbTIuZGZlLm9uZW1hcC5zZ1wvYXBpXC92MlwvdXNlclwvc2Vzc2lvbiIsImlhdCI6MTU1MzY3MDI5OCwiZXhwIjoxNTU0MTAyMjk4LCJuYmYiOjE1NTM2NzAyOTgsImp0aSI6Ijk0NGJhZDJiMTk4ZjdiZjZiZWIyMTJiNTEyMGQ0YWQzIn0.XmU76Eghfs1ZhzkN5BuAasmAP1MH2ntBDxK1TC12YHg"
+routeType="walk"
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+min_dist_list = c()
+for(i in c(1:249)) {
+  # i-th element of `u1` squared into `i`-th position of `usq`
+  house <- houses_grouped_df[i,]
+  lon1 <- house$X
+  lat1<-house$Y
+  lon2 <- house$school_X
+  lat2 <- house$school_Y
+  url <- paste("https://developers.onemap.sg/privateapi/routingsvc/route?start=",lat1,",",lon1,"&end=",lat2,",",lon2,"&routeType=",routeType,"&token=",onemap_token, sep="")
+     
+  r <- GET(url)
+  resp <- content(r)
+  print(resp$status_message)
+  min_dist_list <- append(min_dist_list,resp$route_summary$total_distance)
+     
+}
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+for(i in c(250:499)) {
+  # i-th element of `u1` squared into `i`-th position of `usq`
+  house <- houses_grouped_df[i,]
+  lon1 <- house$X
+  lat1<-house$Y
+  lon2 <- house$school_X
+  lat2 <- house$school_Y
+  url <- paste("https://developers.onemap.sg/privateapi/routingsvc/route?start=",lat1,",",lon1,"&end=",lat2,",",lon2,"&routeType=",routeType,"&token=",onemap_token, sep="")
+     
+  r <- GET(url)
+  resp <- content(r)
+  print(resp$status_message)
+  min_dist_list <- append(min_dist_list,resp$route_summary$total_distance)
+     
+}
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+for(i in c(500:550)) {
+  # i-th element of `u1` squared into `i`-th position of `usq`
+  house <- houses_grouped_df[i,]
+  lon1 <- house$X
+  lat1<-house$Y
+  lon2 <- house$school_X
+  lat2 <- house$school_Y
+  url <- paste("https://developers.onemap.sg/privateapi/routingsvc/route?start=",lat1,",",lon1,"&end=",lat2,",",lon2,"&routeType=",routeType,"&token=",onemap_token, sep="")
+     
+  r <- GET(url)
+  resp <- content(r)
+  print(resp$status_message)
+  min_dist_list <- append(min_dist_list,resp$route_summary$total_distance)
+     
+}
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_grouped$min_school <- min_dist_list
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+write_csv(houses_grouped, 'data/resale-flat-prices/all_flats_grouped.csv')
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+

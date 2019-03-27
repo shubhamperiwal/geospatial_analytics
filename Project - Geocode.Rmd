@@ -165,3 +165,15 @@ clinics_location <- mutate_geocode(clinics, address)
 
 write_csv(clinics_location, 'data/clinics/healthcare_facilities.csv')
 ```
+
+# GEOCODE SCHOOLS
+
+```{r}
+schools <- read_csv('data/schools/general-information-of-schools.csv')
+schools <- schools %>% select(c(school_name, address, postal_code, dgp_code, zone_code))
+
+schools$address <- paste(schools$address, "Singapore")
+schools_location <- mutate_geocode(schools, address)
+
+write_csv(schools_location, 'data/schools/schools.csv')
+```
