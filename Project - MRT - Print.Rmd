@@ -27,15 +27,39 @@ tm_shape(mpsz) + tm_polygons() +
   tm_shape(houses_grouped_sf) +
     tm_dots(col='min_MRT',
             style='quantile',
-            size=0.5)
+            size=0.15) + 
+  tm_style("col_blind")
+
+
 ```
+
+
+
 
 #Create the plot on a subzone level
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 houses_agg <- houses_grouped_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_MRT))
 
-ggplot(houses_agg, aes(x = SUBZONE_N, mean_dist)) + 
-  geom_col() + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+mrthist <- ggplot(houses_agg, aes(x = SUBZONE_N, mean_dist)) + 
+  geom_col(fill = '#336e7b') + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=15)) 
+
+mrthist
+```
+
+
+#Set Plot Panel Background
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+# Change the colors of plot panel background to lightblue and the color of grid lines to white
+mrthist + theme(
+  panel.background = element_rect(fill = "#e4e9ed",
+                                colour = "#e4e9ed",
+                                size = 0.5, linetype = "solid"),
+  panel.grid.major = element_line(size = 0.5, linetype = 'solid',
+                                colour = "white"), 
+  panel.grid.minor = element_line(size = 0.25, linetype = 'solid',
+                                colour = "white")
+  )
 ```
