@@ -22,7 +22,7 @@ houses_grouped_df <- as.data.frame(st_coordinates(houses_grouped_sf))
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-clinics <- read_csv('data/clinics/healthcare_facilities.csv')
+clinics <- read_csv('data/clinics/all_clinics.csv')
 clinics_sf <- st_as_sf(clinics, coords = c("lon", "lat"))
 clinics_df <- as.data.frame(st_coordinates(clinics_sf))
 ```
@@ -38,9 +38,6 @@ houses_grouped_df$dist_which <- dist_matrix$min_dist_which
 houses_grouped_df$clinic_X <- clinics_df$X[houses_grouped_df$dist_which]
 houses_grouped_df$clinic_Y <- clinics_df$Y[houses_grouped_df$dist_which]
 dist_matrix$group <- houses_grouped$group_id
-
-min(dist_matrix$min_dist)
-max(dist_matrix$min_dist)
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}

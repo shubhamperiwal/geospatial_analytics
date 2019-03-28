@@ -166,6 +166,23 @@ clinics_location <- mutate_geocode(clinics, address)
 write_csv(clinics_location, 'data/clinics/healthcare_facilities.csv')
 ```
 
+# GEOCODE GP CLINICS
+
+```{r}
+gpclinics <- readOGR(dsn='data/clinics', layer='GPClinics')@data
+gpclinics$address <- paste(gpclinics$EST_ADD_BL, gpclinics$EST_ADD_ST, "Singapore")
+gpclinics_location <- mutate_geocode(gpclinics, address)
+
+gpclinics_location[451307,]$lat <- 1.317270
+gpclinics_location[451307,]$lon <- 103.897510
+
+gpclinics_location_uniq[176,]$lat <- 1.317270
+gpclinics_location_uniq[176,]$lon <- 103.897510
+
+gpclinics_location_uniq <- gpclinics_location %>% distinct(address, .keep_all = TRUE)
+write_csv(gpclinics_location_uniq, 'data/clinics/gpclinics.csv')
+```
+
 # GEOCODE SCHOOLS
 
 ```{r}
