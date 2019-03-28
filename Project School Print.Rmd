@@ -1,3 +1,5 @@
+
+
 ---
 title: "Project - Schools - Print"
 output: html_notebook
@@ -13,7 +15,11 @@ for (p in packages){
 }
 ```
 
-
+#Installing Extra Fonts
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+font_import()
+font
+```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 houses_group_school <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
