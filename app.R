@@ -28,14 +28,21 @@ busStop.data <- distinct(busStop@data, 'BUS_sTOP_N')
 taxiStop <- readOGR(dsn='data/taxistand', layer='TaxiStop')
 clinics <- readOGR(dsn="data/clinics/MOH_CHAS_CLINICS.kml", layer="MOH_CHAS_CLINICS")
 houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
-houses_group_hawker <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
-houses_grouped_sf <- st_as_sf(houses_group_hawker, coords = c("lon", "lat"))
 mrt_station <- readOGR(dsn="data/mrtstation/lta-mrt-station-exit-kml.kml", layer="MRT_EXITS")
 pre_schools <- readOGR(dsn="data/schools/pre-schools-location-kml.kml", layer="PRESCHOOLS_LOCATION")
 singapore_police <- readOGR(dsn="data/singapore-police-force-establishment/singapore-police-force-establishments-2018-kml.kml", layer="SPF_ESTABLISHMENTS_2018")
 ogrListLayers("data/hawker-centres/hawker-centres-kml.kml")
 hawker_centres <- readOGR(dsn="data/hawker-centres/hawker-centres-kml.kml", layer='HAWKERCENTRE')
-houses_agg <- houses_grouped_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_clinic))
+hc_sf <- st_as_sf(hawker_centres)
+hc_sf <- st_set_crs(hc_sf, 4326)
+hc_sf <- st_transform(hc_sf, 3414)
+houses_group <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
+houses_group_sf <- st_as_sf(houses_group, coords = c("lon", "lat"))
+min_clinic <- houses_group_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_clinic))
+min_hawker <- houses_group_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_hawker))
+min_MRT <- houses_group_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_MRT))
+min_school <- houses_grouped_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_school))
+
 
 # Define UI ----
 ui <- navbarPage(
@@ -79,13 +86,21 @@ ui <- navbarPage(
   ),
   tabPanel("View Accessibility Scores",
            sidebarLayout(
-             sidebarPanel(),
+             sidebarPanel(  
+               fluidRow(
+                 column(10,
+                        radioButtons("test", h3("Display map by:"),
+                                     choices = list("Default" = "default", 
+                                                    "Clinic"= "clinics",
+                                                    "MRT-Station" = "mrt_station",
+                                                    "Pre-School" = "pre_schools",
+                                                    "Hawker" = "hawker"),
+                                     selected = "default"))
+               )),
              mainPanel(
-               plotOutput("xscore", height = 400, width = 600),
+               leafletOutput("xscore", height = 400, width = 600),
                br(),
-               plotOutput("barchart", height = 400, width = 600)
-               #h5("Data table information"),
-               #DT::dataTableOutput("table")
+               plotOutput("barchart", height = 300, width = 600)
              ))
   )
 )
@@ -111,18 +126,41 @@ server <- function(input, output) {
   # output$table <- DT::renderDataTable(DT::datatable({mydata}))
   
   ### For Accessibility Score###
-  output$xscore <-  renderPlot({
-    tm_shape(mpsz) + tm_polygons() + 
-      tm_shape(houses_grouped_sf) +
-      tm_dots(col='min_clinic',
-              style='quantile',
-              size=0.5)
+  output$xscore <-  renderLeaflet({
+    if(input$test == "clinics"){
+      mydata <-tm_shape(mpsz) + tm_polygons() + tm_shape(houses_group_sf) +tm_dots(col='min_clinic',style='quantile', size=0.01)
+    }else if(input$test == "mrt_station"){
+      mydata <-tm_shape(mpsz) + tm_polygons() + tm_shape(houses_group_sf) +tm_dots(col='min_MRT',style='quantile', size=0.01)
+    }else if(input$test == "pre_schools"){
+      mydata <-tm_shape(mpsz) + tm_polygons() + tm_shape(houses_grouped_sf) +tm_dots(col='min_school',style='quantile',size=0.01)
+    }else if(input$test == "hawker"){
+      mydata <- tm_shape(mpsz) + tm_polygons() + tm_shape(houses_grouped_sf) + tm_dots(col='min_hawker',style='quantile',size=0.01)
+    }else{
+      mydata <- tm_shape(mpsz) + tm_polygons()
+    }
+    tmap_leaflet(mydata)
   })
-  ### For Barchart ###
+  
+  # ### For Barchart ###
   output$barchart <-  renderPlot({
-    ggplot(houses_agg, aes(x = SUBZONE_N, mean_dist)) + 
-      geom_col() + 
-      theme(axis.text.x = element_text(angle = 90, hjust = 1))
+    if(input$test == "clinics"){
+      plot(ggplot(min_clinic, aes(x = SUBZONE_N, mean_dist)) +
+             geom_col() +
+             theme(axis.text.x = element_text(angle = 90, hjust = 1)))
+    }else if(input$test == "mrt_station"){
+      plot(ggplot(min_MRT, aes(x = SUBZONE_N, mean_dist)) +
+             geom_col() +
+             theme(axis.text.x = element_text(angle = 90, hjust = 1)))
+    }else if(input$test == "pre_schools"){
+      plot(ggplot(min_school, aes(x = SUBZONE_N, mean_dist)) +
+             geom_col() +
+             theme(axis.text.x = element_text(angle = 90, hjust = 1)))
+    }else if(input$test == "hawker"){
+      plot(ggplot(min_hawker, aes(x = SUBZONE_N, mean_dist)) +
+             geom_col() +
+             theme(axis.text.x = element_text(angle = 90, hjust = 1)))
+    }else{
+    }
   })
   
   ### For Initial Plot###
@@ -176,7 +214,6 @@ server <- function(input, output) {
     }else if(input$radio == "Hawker"){
       mydata <- as.data.frame(hawker_centres)
     }else{
-      mydata <- as.data.frame("")
     }
   })
   
