@@ -107,7 +107,7 @@ houses_grouped$min_clinic <- min_dist_list
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 write_csv(houses_grouped, 'data/resale-flat-prices/all_flats_grouped.csv')
-```
+  ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 
