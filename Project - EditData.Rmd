@@ -134,10 +134,13 @@ clinics <- read_csv('data/clinics/healthcare_facilities.csv')
 gpclinics <- readOGR(dsn='data/clinics', layer='GPClinics')@data
 
 gpclinics <- read_csv('data/clinics/gpclinics.csv')
-colnames(clinics) <- c('name', 'address', 'postal', 'lat', 'lon')
-gpclinics <- gpclinics %>% select('EST_NAME', 'address', 'EST_ADD_PO', 'lat', 'lon')
+colnames(gpclinics) <- c('name', 'address', 'postal', 'lat', 'lon')
+gpclinics <- gpclinics %>% dplyr::select('EST_NAME', 'address', 'EST_ADD_PO', 'lat', 'lon')
 all_clinics <- rbind.data.frame(clinics, gpclinics)
 write_csv(all_clinics_na, 'data/clinics/all_clinics.csv')
+
+gpclinics <- na.omit(gpclinics)
+write_csv(gpclinics, 'data/clinics/gpclinics.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
