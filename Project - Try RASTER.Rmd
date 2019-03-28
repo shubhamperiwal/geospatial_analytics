@@ -1,0 +1,203 @@
+---
+title: "Project - Try RASTER"
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('sf', 'tmap', 'ggmap', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr', 'raster')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses <- read_csv('data/resale-flat-prices/all_flats_updated.csv')
+houses_grouped <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
+houses_grouped_sf <- st_as_sf(houses_grouped, coords = c("lon", "lat"))
+```
+
+
+```{r}
+houses_grouped_sf <- st_set_crs(houses_grouped_sf, 4326)
+houses_grouped_3414 <- st_transform(houses_grouped_sf, 3414)
+
+clinics_sf <- st_set_crs(clinics_sf, 4326)
+clinics_3414 <- st_transform(clinics_sf, 3414)
+```
+
+```{r}
+
+
+houses_sp <- as(houses_grouped_sf, 'Spatial')
+booths_buffer = st_buffer(houses_grouped_3414, 2000)
+booths_villages = st_intersection(booths_buffer, clinics_3414)
+
+st_crs(houses_grouped_sf)
+
+st_crs(clinics_3414)
+```
+  
+  
+houses_grouped_df <- as.data.frame(st_coordinates(houses_grouped_sf))
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+clinics <- read_csv('data/clinics/healthcare_facilities.csv')
+clinics_sf <- st_as_sf(clinics, coords = c("lon", "lat"))
+clinics_df <- as.data.frame(st_coordinates(clinics_sf))
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+dist_matrix <- as.data.frame(crossdist(houses_grouped_df$X, houses_grouped_df$Y, clinics_df$X, clinics_df$Y))
+
+head(dist_matrix)
+#get min of all columns
+dist_matrix$min_dist <- apply(dist_matrix,1,min)
+dist_matrix$group <- houses_grouped$group_id
+
+min(dist_matrix$min_dist)
+max(dist_matrix$min_dist)
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+
