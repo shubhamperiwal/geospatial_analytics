@@ -1,0 +1,39 @@
+---
+title: "Project - Taxi - Raster"
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('sf', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr', 'raster')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses <- read_csv('data/resale-flat-prices/all_flats_updated.csv')
+houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
+houses_sf <- st_set_crs(houses_sf, 4326)
+houses_sf <- st_transform(houses_sf, 3414)
+
+st_crs(houses_sf, 'Spatial')
+```
+
+
+```{r}
+ogrListLayers(dsn='data/taxistand')
+taxis <- readOGR(dsn='data/taxistand', layer='TaxiStop')
+taxis_sf <- st_as_sf(taxis)
+
+summary(taxis_sf)
+st_crs(taxis_sf) <- 4757
+proj4string(as(taxis_sf, 'Spatial'))
+
+st_crs(taxis_sf)
+taxis_sf <- st_set_crs(taxis_sf, 4326)
+taxis_sf <- st_transform(taxis_sf, 3414)
+GDALinfo()
+```
