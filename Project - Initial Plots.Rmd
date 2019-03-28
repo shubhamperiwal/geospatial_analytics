@@ -2,6 +2,11 @@
 title: "Project - Initial Plots"
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE)
+```
+
+
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 packages = c('sf', 'tmap', 'ggmap', 'rgdal', 'tidyverse')
 for (p in packages){ 
@@ -28,27 +33,23 @@ busStop.data <- distinct(busStop@data, 'BUS_sTOP_N')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-tm_shape(mpsz) + tm_polygons() +
-  tm_shape(busStop) + tm_dots()
+#Setting an interactive view mode of tmap
+tmap_mode("view")
 
-# #Setting an interactive view mode of tmap
-# tmap_mode("view")
-# 
-# pointdist<-tm_basemap("OpenStreetMap.Mapnik") + 
-#   tm_shape(sg)+tm_borders(alpha = 0.5)+
-#   tm_shape(gpfinal)+
-#   tm_bubbles(col = "orange",
-#            size = 0.1,
-# #            border.col = "black",
-# #            border.lwd = 1)
-# 
-# pointdist
+tm_shape(mpsz) + 
+  tm_polygons() + 
+  tm_shape(busStop) + 
+  tm_dots(size = 0.000001, col = "#7d4627") + 
+  tm_style("classic", bg.color="white") +
+  tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
+
+
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 #BUS STOP AND HOUSES
 tmap_mode('plot')
-tm_shape(mpsz) + tm_polygons() + 
+tm_shape(mpsz) + tm_style("classic", bg.color="white") + tm_polygons() + 
   tm_shape(houses_sf) + tm_bubbles(col='flat_type') +
   tm_shape(busStop) + tm_dots()
 
@@ -61,8 +62,13 @@ taxiStop <- readOGR(dsn='data/taxistand', layer='TaxiStop')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#Setting an interactive view mode of tmap
+tmap_mode("view")
+
 tm_shape(mpsz) + tm_polygons() +
-  tm_shape(taxiStop) + tm_dots()
+  tm_shape(taxiStop) + tm_dots(size = 0.01, col = "#7d4627") + 
+  tm_style("classic", bg.color="white") +
+  tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
@@ -72,7 +78,9 @@ clinics <- readOGR(dsn="data/clinics/MOH_CHAS_CLINICS.kml", layer="MOH_CHAS_CLIN
 ```
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 tm_shape(mpsz) + tm_polygons() +
-  tm_shape(clinics) + tm_dots()
+  tm_shape(clinics) + tm_dots(size = 0.001, col = "#7d4627") + 
+  tm_style("classic", bg.color="white") +
+  tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
 ```
 
 ## HAWKER CENTRES 
@@ -86,7 +94,9 @@ hawker_centres <- readOGR(dsn="data/hawker-centres/hawker-centres-kml.kml", laye
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 tm_shape(mpsz) + tm_polygons() +
-  tm_shape(hawker_centres) + tm_dots()
+  tm_shape(hawker_centres) + tm_dots(size = 0.01, col = "#7d4627") + 
+  tm_style("classic", bg.color="white") +
+  tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
 ```
 
 ## MRT STATION
@@ -98,7 +108,9 @@ mrt_station <- readOGR(dsn="data/mrtstation/lta-mrt-station-exit-kml.kml", layer
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 tm_shape(mpsz) + tm_polygons() +
-  tm_shape(mrt_station) + tm_dots()
+  tm_shape(mrt_station) + tm_dots(size = 0.01, col = "#7d4627") + 
+  tm_style("classic", bg.color="white") +
+  tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
 ```
 
 ## Pre-SCHOOLS
@@ -110,7 +122,9 @@ pre_schools <- readOGR(dsn="data/schools/pre-schools-location-kml.kml", layer="P
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 tm_shape(mpsz) + tm_polygons() +
-  tm_shape(pre_schools) + tm_dots()
+  tm_shape(pre_schools) + tm_dots(size = 0.001, col = "#7d4627") + 
+  tm_style("classic", bg.color="white") +
+  tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
 ```
 
 ## SINGAPORE POLICE FORCE ESTABLISHMENT 
@@ -122,173 +136,8 @@ singapore_police <- readOGR(dsn="data/singapore-police-force-establishment/singa
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 tm_shape(mpsz) + tm_polygons() +
-  tm_shape(singapore_police) + tm_dots()
+  tm_shape(singapore_police) + tm_dots(size = 0.01, col = "#7d4627") + 
+  tm_style("classic", bg.color="white") +
+  tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
 ```
 
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
