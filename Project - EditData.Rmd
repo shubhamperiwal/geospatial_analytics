@@ -125,11 +125,19 @@ write_csv(schools, 'data/schools/schools.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
+clinics <- read_csv('data/clinics/healthcare_facilities.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#ogrListLayers('data/clinics/GPClinics')
+#gpclinics <- readOGR(dsn = 'data/clinics/GPClinics', layer = 'data/clinics/GPClinics')
+gpclinics <- readOGR(dsn='data/clinics', layer='GPClinics')@data
 
+gpclinics <- read_csv('data/clinics/gpclinics.csv')
+colnames(clinics) <- c('name', 'address', 'postal', 'lat', 'lon')
+gpclinics <- gpclinics %>% select('EST_NAME', 'address', 'EST_ADD_PO', 'lat', 'lon')
+all_clinics <- rbind.data.frame(clinics, gpclinics)
+write_csv(all_clinics_na, 'data/clinics/all_clinics.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
