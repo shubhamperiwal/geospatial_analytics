@@ -117,8 +117,11 @@ write_csv(houses, 'data/resale-flat-prices/all_flats_with_group.csv')
 houses_group_test <- houses_group[1:5, ]
 ```
 
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+schools <- read_csv('data/schools/schools.csv')
+schools <- schools[!grepl("JUNIOR COLLEGE", schools$school_name),]
+write_csv(schools, 'data/schools/schools.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
