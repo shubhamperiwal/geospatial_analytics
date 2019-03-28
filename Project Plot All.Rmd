@@ -1,10 +1,10 @@
 ---
-title: "Project - Schools - Print"
-output: html_notebook
+title: "Print Combined"
+output: html_document
 ---
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-packages = c('sf', 'tmap', 'ggmap', 'rgdal', 'tidyverse', 'readr','extrafont')
+packages = c('sf', 'tmap', 'ggmap', 'rgdal', 'tidyverse', 'readr')
 for (p in packages){ 
   if(!require(p, character.only = T)){
     install.packages(p) 
@@ -13,11 +13,9 @@ for (p in packages){
 }
 ```
 
-
-
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-houses_group_school <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
-houses_grouped_sf <- st_as_sf(houses_group_school, coords = c("lon", "lat"))
+houses_group_MRT <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
+houses_grouped_sf <- st_as_sf(houses_group_MRT, coords = c("lon", "lat"))
 
 mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
 mpsz_sf <- st_as_sf(mpsz)
@@ -27,23 +25,27 @@ mpsz_sf <- st_as_sf(mpsz)
 tmap_mode('plot')
 tm_shape(mpsz) + tm_polygons() + 
   tm_shape(houses_grouped_sf) +
-    tm_dots(col='min_school',
+    tm_dots(col='min_MRT',
             style='quantile',
-            size=0.5)
+            size=0.15) + 
+  tm_style("col_blind")
+
 
 ```
+
+
+
 
 #Create the plot on a subzone level
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-houses_agg <- houses_grouped_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_school))
+houses_agg <- houses_grouped_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_MRT))
 
-schoolhist <- ggplot(houses_agg, aes(x = SUBZONE_N, mean_dist)) + 
-  geom_col(fill = '#e05915') + 
+mrthist <- ggplot(houses_agg, aes(x = SUBZONE_N, mean_dist)) + 
+  geom_col(fill = '#336e7b') + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) + theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=15)) 
 
-schoolhist
-
+mrthist
 ```
 
 
@@ -51,9 +53,9 @@ schoolhist
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 # Change the colors of plot panel background to lightblue and the color of grid lines to white
-schoolhist + theme(
-  panel.background = element_rect(fill = "#edd9c0",
-                                colour = "#edd9c0",
+mrthist + theme(
+  panel.background = element_rect(fill = "#e4e9ed",
+                                colour = "#e4e9ed",
                                 size = 0.5, linetype = "solid"),
   panel.grid.major = element_line(size = 0.5, linetype = 'solid',
                                 colour = "white"), 
@@ -61,5 +63,3 @@ schoolhist + theme(
                                 colour = "white")
   )
 ```
-
-
