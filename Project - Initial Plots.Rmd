@@ -30,6 +30,19 @@ busStop.data <- distinct(busStop@data, 'BUS_sTOP_N')
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 tm_shape(mpsz) + tm_polygons() +
   tm_shape(busStop) + tm_dots()
+
+# #Setting an interactive view mode of tmap
+# tmap_mode("view")
+# 
+# pointdist<-tm_basemap("OpenStreetMap.Mapnik") + 
+#   tm_shape(sg)+tm_borders(alpha = 0.5)+
+#   tm_shape(gpfinal)+
+#   tm_bubbles(col = "orange",
+#            size = 0.1,
+# #            border.col = "black",
+# #            border.lwd = 1)
+# 
+# pointdist
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
