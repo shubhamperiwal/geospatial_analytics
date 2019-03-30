@@ -22,21 +22,17 @@ houses_sf <- st_transform(houses_sf, 3414)
 
 
 ```{r}
-ogrListLayers('data/busstop')
-busStops <- readOGR(dsn='data/busstop', layer='BusStop')
-
-summary(busStop)
-st_crs(busStops_sf)
+ogrListLayers('data/busStops/bus-stops.kml')
+busStops <- readOGR(dsn='data/busStops/bus-stops.kml', layer='Layer #0')
 busStops_sf <- st_as_sf(busStops)
-busStops_sf <- st_set_crs(busStops_sf, 3857)
 busStops_sf <- st_transform(busStops_sf, 3414)
 ```
 
 ```{r}
-busStops_buffer <- st_buffer(houses_sf, 2000)
+busStops_buffer <- st_buffer(houses_sf, 300)
 busStops_in_range <- st_intersection(busStops_buffer, busStops_sf)
 
-#Get num of houses with busStops in 2km
+#Get num of houses with busStops in 300m
 length(unique(busStops_in_range$X1))
 
 busStops_coords <- as.data.frame(st_coordinates(busStops_in_range))
@@ -78,7 +74,7 @@ min_dist_not_found_ids <- setdiff(all_house_ids, min_dist_found_ids)
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 min_dist_not_found_sf <- houses_sf[houses_sf$X1 %in% min_dist_not_found_ids,]
 
-busStops_buffer_far <- st_buffer(min_dist_not_found_sf, 9000)
+busStops_buffer_far <- st_buffer(min_dist_not_found_sf, 500)
 busStops_in_range_far <- st_intersection(busStops_buffer_far, busStops_sf)
 
 length(unique(busStops_in_range_far$X1))
