@@ -1,0 +1,67 @@
+---
+title: "Project - Plot - Regions"
+author: "Shubham Periwal"
+date: "April 3, 2019"
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('sf', 'tmap', 'ggmap', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr', 'httr')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
+houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
+
+mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
+```
+
+#If user selects REGION ONLY
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+tmap_mode('view')
+tm_shape(mpsz[mpsz$REGION_N=="NORTH REGION", ]) + tm_polygons() + 
+  tm_shape(houses_sf[houses_sf$REGION_N=="NORTH REGION", ]) +
+    tm_dots(col='min_dist_clinic',
+            style='quantile',
+            size=0.1)
+```
+
+
+#HISTOGRAM of REGIONS
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_agg <- houses_sf %>% group_by(REGION_N) %>% summarise(mean_dist=mean(min_dist_clinic))
+
+ggplot(houses_agg, aes(x = reorder(REGION_N, -mean_dist),y = mean_dist)) + 
+  geom_col() + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+#HISTOGRAM of 1 region by subzone
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_agg <- houses_sf[houses_sf$REGION_N=="CENTRAL REGION", ] %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_clinic))
+
+ggplot(houses_agg, aes(x = reorder(SUBZONE_N, -mean_dist),y = mean_dist)) + 
+  geom_col() + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+#HISTOGRAM of 1 region by town
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_agg <- houses_sf[houses_sf$REGION_N=="CENTRAL REGION", ] %>% group_by(town) %>% summarise(mean_dist=mean(min_dist_clinic))
+
+ggplot(houses_agg, aes(x = reorder(town, -mean_dist),y = mean_dist)) + 
+  geom_col() + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
