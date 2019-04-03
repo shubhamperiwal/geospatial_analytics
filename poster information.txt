@@ -1,0 +1,26 @@
+Issues and Problem
+Our team's objective is to analyse and determine how these facilities such as transportation, school and healthcare services would impact the accessibility level around HDB.
+
+Motivation
+The government has been finding sustainable ways to tackle the increasing inequality and stratification in Singapore.With constant development and improvement of infrastructure around 
+Singapore, the impact on accessibility has not really been research upon.
+
+Team approach
+1) Data Preparation:
+- Convert the address into langtitude and longtitude
+- Transform all spatial reference   system to WGS 84
+
+2) Set range of accessibilityTo avoid calculating distance between all facilities and houses, 
+we drew a radius around each house and calculated distance with facilities within that radius
+
+3) Euclidean distance calculation
+Used to find the closest facility of each HDB and give a score for accessibility.
+ 
+4)User Interaction
+User can choose the accessibility they wish to observe and the appliaction will display the maps and graph to them.
+
+
+Future work
+Our project can be expanded through the following:
+1) Allowing user to upload their own sets of data for analysis on the impact of accessibilities in Singapore or other parts of the world.
+2) Allow adding of a single spatial point on the map and see how the point would impact the accessibility across Singapore.
