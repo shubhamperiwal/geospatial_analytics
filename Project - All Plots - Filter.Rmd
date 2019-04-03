@@ -1,5 +1,5 @@
 ---
-title: "Project - Plot - Regions"
+title: "Project - Plot - Filter"
 author: "Shubham Periwal"
 date: "April 3, 2019"
 ---
@@ -63,5 +63,23 @@ ggplot(houses_agg, aes(x = reorder(town, -mean_dist),y = mean_dist)) +
   geom_col() + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
+#Map Select Subzone
 
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+tmap_mode('view')
+tm_shape(mpsz[mpsz$SUBZONE_N=="SEMBAWANG CENTRAL", ]) + tm_polygons() + 
+  tm_shape(houses_sf[houses_sf$SUBZONE_N=="SEMBAWANG CENTRAL", ]) +
+    tm_dots(col='min_dist_clinic',
+            style='quantile',
+            size=0.1)
+```
 
+#Map Select Town
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+tmap_mode('view')
+  tm_shape(houses_sf[houses_sf$town=="SENGKANG", ]) +
+    tm_dots(col='min_dist_clinic',
+            style='quantile',
+            size=0.1)
+```
