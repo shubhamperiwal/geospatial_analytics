@@ -41,7 +41,8 @@ tm_shape(mpsz) + tm_polygons() +
             style='quantile',
             size=0.1)+
   tm_shape(schools_sf)+
-    tm_symbols(size=0.05, shape=22)
+    tm_symbols(size=0.05, shape=22)+
+  tm_basemap(server = 'OpenStreetMap')
 
 ```
 
