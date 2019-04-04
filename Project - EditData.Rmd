@@ -16,8 +16,8 @@ for (p in packages){
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
 mpsz_sf <- st_as_sf(mpsz)
-mpsz_sf <- st_transform(mpsz_sf, 4326)
-mpsz_sf <- mpsz_sf %>% select(SUBZONE_NO, SUBZONE_N, REGION_N, geometry)
+mpsz_sf <- st_transform(mpsz_sf, 3414)
+mpsz_sf <- mpsz_sf %>% dplyr::select(SUBZONE_NO, SUBZONE_N, PLN_AREA_N,REGION_N,geometry)
 
 
 houses <- read_csv('data/resale-flat-prices/all_flats.csv')
@@ -30,97 +30,34 @@ st_crs(houses_sf) <- st_crs(mpsz_sf)
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 joined_df <- st_join(mpsz_sf, houses_sf, join=st_intersects)
 joined_df <- na.omit(joined_df) 
-joined_df <- joined_df[,c(1:4)]
+joined_df <- joined_df[,c(1:5)]
 st_geometry(joined_df) <- NULL
 
 houses <- left_join(houses, joined_df)
 
-write_csv(houses, 'data/resale-flat-prices/all_flats_updated.csv')
-```
+houses_old <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
+houses_old$PLN_AREA_N <- houses$PLN_AREA_N
+houses_old <- houses_old %>% dplyr::select(X1, address, town, flat_type, lon, lat, Street, SUBZONE_NO, SUBZONE_N,REGION_N, PLN_AREA_N, everything())
 
-# Create grouped HDBs
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-houses_group <- houses %>% group_by(Street) %>% summarise(lon = mean(lon), lat=mean(lat))
-houses_group$group_id <- c(1:length(unique(houses_group$Street)))
-houses_group_ids <- houses_group[, c("group_id", "Street")]
-
-houses <- inner_join(houses, houses_group_ids)
-#write_csv(houses, 'data/resale-flat-prices/all_flats_updated.csv')
-
-#write_csv(houses_group, 'data/resale-flat-prices/all_flats_grouped.csv')
-```
-
-# Add subzone to grouped HDBs
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-houses_group <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
-houses<- read_csv('data/resale-flat-prices/all_flats_updated.csv')
-
-houses <- houses %>% select(c(X1, SUBZONE_NO, SUBZONE_N, REGION_N))
-houses_group <- inner_join(houses_group, houses)
-
-write_csv(houses_group, 'data/resale-flat-prices/all_flats_grouped.csv')
+write_csv(houses_old, 'data/resale-flat-prices/finalCSVforplots.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+# Add subzone, plan area, region to schools
 
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-
-
-```
-
-
-
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-joined_df <- st_join(mpsz_sf, houses_sf, join=st_intersects)
-houses <- na.omit(joined_df)
-write_csv(houses, 'data/resale-flat-prices/all_flats_with_subzone.csv')
-
-houses_hawker <- read_csv('data/resale-flat-prices/all_flats_with_group_hawker.csv')
-houses$min_hawker <- houses_hawker$min_hawker
-write_csv(houses, 'data/resale-flat-prices/all_flats_with_group_hawker.csv')
-
-
-join_group <- st_join(mpsz_sf, houses_group_hawk_sf, join=st_intersects)
-houses_group_hawk <- na.omit(join_group)
-
-write_csv(houses_group_hawk, 'data/resale-flat-prices/all_flats_grouped_hawker.csv')
-``` 
-
-
-
-
-
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-#Add group ID to each house
-houses_sep <- houses %>% separate(address, c("Street", "Block"), sep="block")
-houses_group <- houses_sep %>% group_by(Street) %>% summarise(lon = mean(lon), lat=mean(lat))
-houses_group$group_id <- c(1:length(unique(houses_group$Street)))
-
-houses$Street <- houses_sep$Street
-houses_group_ids <- houses_group[, c("group_id", "Street")]
-
-write_csv(houses_group, 'data/resale-flat-prices/all_grouped_flats.csv')
-houses <- inner_join(houses, houses_group_ids)
-write_csv(houses, 'data/resale-flat-prices/all_flats_with_group.csv')
-
-houses_group_test <- houses_group[1:5, ]
-```
-
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+mpsz_sf <- mpsz_sf[,c(2,3,6,8)]
 schools <- read_csv('data/schools/schools.csv')
-schools <- schools[!grepl("JUNIOR COLLEGE", schools$school_name),]
+schools_sf <- st_as_sf(schools, coords = c("lon", "lat"))
+#schools <- schools[!grepl("JUNIOR COLLEGE", schools$school_name),]
+schools_sf <- st_set_crs(schools_sf, 4326)
+schools_sf <- st_transform(schools_sf, 3414)
+
+joined_df <- st_join(schools_sf, mpsz_sf, join=st_intersects)
+joined_df <- na.omit(joined_df)
+st_geometry(joined_df) <- NULL
+
+schools <- left_join(schools, joined_df)
+
 write_csv(schools, 'data/schools/schools.csv')
 ```
 
@@ -144,24 +81,97 @@ write_csv(gpclinics, 'data/clinics/gpclinics.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#Add subzone etc to gplicics
+#gpclinics <- readOGR(dsn='data/clinics', layer='GPClinics')@data
 
+gpclinics <- read_csv('data/clinics/gpclinics.csv')
+clinics_sf <- st_as_sf(gpclinics, coords = c("lon", "lat"))
+clinics_sf <- st_set_crs(clinics_sf, 4326)
+clinics_sf <- st_transform(clinics_sf, 3414)
+
+
+joined_df <- st_join(clinics_sf, mpsz_sf, join=st_intersects)
+joined_df <- na.omit(joined_df)
+st_geometry(joined_df) <- NULL
+
+clinics <- left_join(gpclinics, joined_df)
+#write_csv(clinics, 'data/clinics/gpclinics.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#Add subzone etc in hawker
+ogrListLayers(dsn='data/hawker-centres/hawker-centres-kml.kml')
+hawkers <- readOGR(dsn='data/hawker-centres/hawker-centres-kml.kml', layer='HAWKERCENTRE')
+hawkers_sf <- st_as_sf(hawkers)
+hawkers_sf <- st_set_crs(hawkers_sf, 4326)
+hawkers_sf <- st_transform(hawkers_sf, 3414)
 
+joined_df <- st_join(hawkers_sf, mpsz_sf, join=st_intersects)
+joined_df <- na.omit(joined_df)
+st_geometry(joined_df) <- NULL
+yo <- st_coordinates(hawkers_sf)
+joined_df$lon <- yo[,1]
+joined_df$lat <- yo[,2]
+
+st_write(hawkers_sf, dsn='data/hawker-centres/hawker-centres-kml-3.kml', layer='HAWKERCENTRE_3')
+write_csv(joined_df, 'data/hawker-centres/hawker-centres.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+ogrListLayers('data/busStops/bus-stops.kml')
+busStops <- readOGR(dsn='data/busStops/bus-stops.kml', layer='Layer #0')
+busStops_sf <- st_as_sf(busStops)
+busStops_sf <- st_transform(busStops_sf, 3414)
+busStops_sf <- st_transform(busStops_sf, 4326)
 
+busStops_sf <- busStops_sf[-c(2048,2049, 2052, 2244),]
+joined_df <- st_join(busStops_sf, mpsz_sf, join=st_intersects)
+
+joined_df <- na.omit(joined_df)
+st_geometry(joined_df) <- NULL
+yo <- st_coordinates(busStops_sf)
+joined_df$lon <- yo[,1]
+joined_df$lat <- yo[,2]
+
+write_csv(joined_df, 'data/busStops/bus-stops.csv')
 ```
 
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+ogrListLayers('data/mrtstation/lta-mrt-station-exit-kml.kml')
+mrt <- readOGR(dsn='data/mrtstation/lta-mrt-station-exit-kml.kml',
+               layer='MRT_EXITS')
+mrts_sf <- st_as_sf(mrt)
+mrts_sf <- st_set_crs(mrts_sf, 4326)
+mrts_sf <- st_transform(mrts_sf, 3414)
 
+joined_df <- st_join(mrts_sf, mpsz_sf, join=st_intersects)
+
+joined_df <- na.omit(joined_df)
+st_geometry(joined_df) <- NULL
+yo <- st_coordinates(mrts_sf)
+joined_df$lon <- yo[,1]
+joined_df$lat <- yo[,2]
+
+write_csv(joined_df, 'data/mrtstation/mrt.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+ogrListLayers(dsn='data/singapore-police-force-establishment/singapore-police-force-establishments-2018-kml.kml')
+spfs <- readOGR(dsn='data/singapore-police-force-establishment/singapore-police-force-establishments-2018-kml.kml', layer='SPF_ESTABLISHMENTS_2018')
+spfs_sf <- st_as_sf(spfs)
+spfs_sf <- st_set_crs(spfs_sf, 4326)
+spfs_sf <- st_transform(spfs_sf, 3414)
 
+joined_df <- st_join(spfs_sf, mpsz_sf, join=st_intersects)
+
+joined_df <- na.omit(joined_df)
+st_geometry(joined_df) <- NULL
+yo <- st_coordinates(spfs_sf)
+joined_df$lon <- yo[,1]
+joined_df$lat <- yo[,2]
+
+write_csv(joined_df, 'data/singapore-police-force-establishment/singapore-police-force-establishments-2018.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}

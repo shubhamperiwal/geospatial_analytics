@@ -25,3 +25,6 @@ library(data.tree)
 library(ahp)
 accessAhp <- Load("finalahp.txt")
 ```
+
+```{r}
+```
