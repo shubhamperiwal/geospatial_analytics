@@ -5,7 +5,7 @@ date: "April 3, 2019"
 ---
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-packages = c('sf', 'tmap', 'ggmap', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr', 'tmaptools','geojson')
+packages = c('sf', 'tmap', 'ggmap', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr', 'tmaptools','spatial.tools','raster')
 for (p in packages){ 
   if(!require(p, character.only = T)){
     install.packages(p) 
@@ -23,6 +23,32 @@ houses_sf <- st_transform(houses_sf, 3414)
 mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
 mpsz_sf <- st_as_sf(mpsz)
 ```
+
+#Cut the region
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+tmap_mode('view')
+
+regionArea <- mpsz[mpsz$REGION_N=="NORTH REGION", ]
+#bb1 <- bbox(regionArea)
+
+#tahoe_highrez <- brick(system.file("external/tahoe_highrez.tif", package="spatial.tools"))
+bbox_to_SpatialPolygons(regionArea)
+regionArea_extent <- extent(regionArea)
+bbox_to_SpatialPolygons(regionArea_extent,
+	CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=SVY21 +towgs84=0,0,0"))
+regionAreaz_bbox <- bbox(regionArea)
+bbox_to_SpatialPolygons(regionArea_bbox,
+	CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=SVY21 +towgs84=0,0,0"))
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+bbox <- get_bbox (c (12386.29, 35330.11, 32377.19, 50256.33))
+dat_B <- extract_osm_objects (key = 'building', bbox = bbox)
+```
+
+
 
 #If user selects REGION ONLY
 
@@ -159,23 +185,3 @@ tmap_mode('view')
             style='quantile',
             size=0.1)
 ```
-
-
-{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
-houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
-
-mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
-
-schools <- read_csv('data/schools/schools.csv' )
-schools_sf <- st_as_sf(schools, coords=c('lon','lat' ))
-
-{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-tmap_mode('view')
-tm_shape(mpsz) + tm_polygons() + 
-  tm_shape(houses_sf) +
-    tm_dots(col='min_dist_school', #School here but change to anything
-            style='quantile',
-            size=0.1) +
-  tm_shape(schools_sf) +
-    tm_bubbles(size=0.05)
