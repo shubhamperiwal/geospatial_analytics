@@ -44,15 +44,16 @@ regionArea <- mpsz[mpsz$REGION_N=="NORTH REGION", ]
 st_bbox(regionArea)
 st_bbox(houses_sf)
 
-st_bbox(regionArea)
+bb2 <- bb(st_bbox(regionArea))
 
 plot(houses_sf[houses_sf$REGION_N=="NORTH REGION", ])
 
-tm_shape(regionArea,
+mapName <- tm_shape(regionArea,
          bbox = st_bbox(regionArea)) + 
   tm_view(set.bounds = st_bbox(regionArea)) +
   tm_polygons()
-leaflet::setMaxBounds(mapName, 12386, 35330, 32377, 50256)
+st_bbox(regionArea)
+leaflet::fitBounds(mapName, 12386, 35330, 32377, 50256)
 ```
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 tmap_mode('view')
@@ -77,8 +78,7 @@ houses_agg <- houses_sf %>% group_by(REGION_N) %>% summarise(mean_dist=mean(min_
 
 ggplot(houses_agg, aes(x = reorder(REGION_N, -mean_dist),y = mean_dist)) + 
   geom_col() + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-  scale_x_discrete(name ="Regions")
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
 
@@ -86,12 +86,10 @@ ggplot(houses_agg, aes(x = reorder(REGION_N, -mean_dist),y = mean_dist)) +
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 houses_agg <- houses_sf[houses_sf$REGION_N=="CENTRAL REGION", ] %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_clinic))
-dec <- houses_agg[order(houses_agg$mean_dist, decreasing = T),][c(1:10),]
 
-ggplot(dec, aes(x = reorder(SUBZONE_N, -mean_dist),y = mean_dist)) + 
+ggplot(houses_agg, aes(x = reorder(SUBZONE_N, -mean_dist),y = mean_dist)) + 
   geom_col() + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-   scale_x_discrete(name ="Subzones")
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
 #HISTOGRAM of 1 region by town

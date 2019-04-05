@@ -44,14 +44,19 @@ prefMatrix <- data.frame(c(1,weight_b_c,weight_b_h,weight_b_m,weight_b_sc,weight
 
 colnames(prefMatrix) <- c(1:6)
 
-prefComb <- data.frame(c(1,2),c(2,3),c(1,2))
+prefComb <- data.frame(c(1,2,1/9),c(2,3,3),c(1,2,5))
 #Create AHP Matrix
 ahpMat <- AhpMatrix(prefMatrix)
+ahpMat2 <- AhpMatrix(prefComb)
 
 #Calculate the ahp priority weights from the AHP matrix.
 priorities <- PrioritiesFromPairwiseMatrixEigenvalues(ahpMat)
+priorities2 <- PrioritiesFromPairwiseMatrixEigenvalues(ahpMat2)
+
+
 priorities$priority
 priorityList <- priorities$priority
+priorityList2 <- priorities2$priority
 consistency <- priorities$consistency
 
 print(priorityList)
