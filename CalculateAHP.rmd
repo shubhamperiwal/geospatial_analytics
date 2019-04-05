@@ -55,21 +55,21 @@ priorities$busStop
 ```
 
 ```{r}
-houses$ahp<- 
-  houses$min_dist_busStop*priorities$busStop + houses$min_dist_clinic*priorities$clinics +
-  houses$min_dist_hawker*priorities$hawkers  + houses$min_dist_mrt*priorities$mrt +
-  houses$min_dist_school*priorities$schools  + houses$min_dist_spf*priorities$spf
+houses_sf$ahp<- 
+  houses_sf$min_dist_busStop*priorities$busStop + houses_sf$min_dist_clinic*priorities$clinics +
+  houses_sf$min_dist_hawker*priorities$hawkers  + houses_sf$min_dist_mrt*priorities$mrt +
+  houses_sf$min_dist_school*priorities$schools  + houses_sf$min_dist_spf*priorities$spf
 ```
 
 ```{r}
 tmap_mode('plot')
 tm_shape(mpsz) + tm_polygons() + 
   tm_shape(houses_sf) +
-    tm_dots(col='ahp', #School here but change to anything
+    tm_dots(col='ahp', #AHP now
             style='quantile',
             size=0.5)
-
 ```
+
 ```{r}
 # features <- c('busStop', 'clinics','hawkers','mrt','schools','spf')
 # weight_b_c <- 9  #Weight busstop_clinic. Bus stop is much higher priority than clinic
