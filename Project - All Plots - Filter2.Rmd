@@ -94,8 +94,22 @@ tm_shape(yo[yo$REGION_N=="NORTH REGION", ]) + tm_dots()
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-houses_all <- read_csv('data/resale-flat-prices/all_flats.csv')
-houses_all$address
+facilities_agg <- busStop_sf %>% group_by(SUBZONE_N) %>% summarise(count = n())
+mpsz_data <- mpsz@data
+mpsz_count <- left_join(mpsz_data, houses_agg)
+mpsz_count$count[is.na(mpsz_count$count)] <- 0
+mpsz@data <- mpsz_count
+
+tmap_mode("view")
+tm_shape(mpsz) +
+  tm_fill("count",
+          style = "quantile",
+          palette = "Blues",
+          thres.poly = 0) + 
+  tm_layout(legend.show = FALSE,
+            title.position = c("center", "center"), 
+            title.size = 20) +
+  tm_borders(alpha = 0.5)
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
