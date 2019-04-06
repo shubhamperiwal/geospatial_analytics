@@ -37,7 +37,7 @@ summary(houses)
 tmap_mode("view")
   tm_shape(mpsz[mpsz$REGION_N=="NORTH REGION", ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1) + 
   tm_shape(mpr[mpr$Name=="NORTH REGION",]) + tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
-  tm_shape(houses_sf[houses_sf$REGION_N=="NORTH REGION", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 5353.2), size=0.05)
+  tm_shape(houses_sf[houses_sf$REGION_N=="NORTH REGION", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 600, 700, 800, 8200), size=0.05, palette = 'GnBu')
 
 ```
 
@@ -51,7 +51,7 @@ clinicicon <- tmap_icons(file = 'ICONs/hospital.png', width = 48, height = 48, k
 tmap_mode("view")
   tm_shape(mpsz[mpsz$REGION_N=="NORTH REGION", ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1) + 
   tm_shape(mpr[mpr$Name=="NORTH REGION",]) + tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
-  tm_shape(houses_sf[houses_sf$REGION_N=="NORTH REGION", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 5353.2), size=0.05) +
+  tm_shape(houses_sf[houses_sf$REGION_N=="NORTH REGION", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 600, 700, 800, 8200), size=0.05, palette = 'GnBu') +
   tm_shape(clinics_sf[clinics_sf$REGION_N=="NORTH REGION", ]) + tm_dots(size = .1, alpha = .5, shape = clinicicon) 
   
 

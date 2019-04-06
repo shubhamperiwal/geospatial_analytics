@@ -35,7 +35,7 @@ clinics_sf <- st_as_sf(clinics, coords=c("lon", "lat"))
 tmap_mode("view")
   tm_shape(mpsz[mpsz$PLN_AREA_N=="BISHAN", ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1) +
   tm_shape(mpa[mpa$Name=="BISHAN",]) + tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
-  tm_shape(houses_sf[houses_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 5353.2), size=0.05)
+  tm_shape(houses_sf[houses_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 600, 700, 800, 8200), size=0.05, palette = 'GnBu')
 
 ```
 
@@ -45,7 +45,7 @@ clinicicon <- tmap_icons(file = 'ICONs/hospital.png', width = 48, height = 48, k
 tmap_mode("view")
   tm_shape(mpsz[mpsz$PLN_AREA_N=="BISHAN", ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1) +
   tm_shape(mpa[mpa$Name=="BISHAN",]) + tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
-  tm_shape(houses_sf[houses_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 5353.2), size=0.05) +
+  tm_shape(houses_sf[houses_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 600, 700, 800, 8200), size=0.05, palette = 'GnBu') +
   tm_shape(clinics_sf[clinics_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(size = .3, alpha = .5, shape = clinicicon)
 ```
 
