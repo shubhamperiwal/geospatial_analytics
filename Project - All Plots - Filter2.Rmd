@@ -48,9 +48,12 @@ houses_agg <- houses_agg[order(houses_agg$mean_dist),][c(1:10),]
 
 ggplot(houses_agg, aes(x = reorder(SUBZONE_N, mean_dist),
                        y = mean_dist,
-                       fill=ifelse(SUBZONE_N=="BUGIS","green","red"))) + 
+                       fill=ifelse(SUBZONE_N=="BUGIS","Highlight","Normal"))) + 
   geom_col() + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        legend.title = element_blank(),
+        legend.position = "none") +
+  labs(x = "Subzone", y = "Mean distance")
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}

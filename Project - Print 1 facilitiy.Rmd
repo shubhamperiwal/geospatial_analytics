@@ -20,15 +20,20 @@ houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
 houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
 
 mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
+
+schools <- read_csv('data/schools/schools.csv' )
+schools_sf <- st_as_sf(schools, coords=c('lon','lat' ))
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-tmap_mode('plot')
+tmap_mode('view')
 tm_shape(mpsz) + tm_polygons() + 
   tm_shape(houses_sf) +
     tm_dots(col='min_dist_school', #School here but change to anything
             style='quantile',
-            size=0.5)
+            size=0.1) +
+  tm_shape(schools_sf) +
+    tm_bubbles(size=0.05)
 
 ```
 
