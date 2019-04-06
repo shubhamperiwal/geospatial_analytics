@@ -4,27 +4,13 @@ title: "All Plots - filter 2 "
 Can't use Filter 1 to avoid git conflict
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-packages = c('ggmap', 'rgdal','qdapTools', 'spatstat', 'readr')
+packages = c('ggmap', 'rgdal','qdapTools', 'spatstat', 'readr', 'dplyr', 'sf', 'tmap','tmaptools')
 for (p in packages){ 
   if(!require(p, character.only = T)){
     install.packages(p) 
   }
   library(p,character.only = T) 
 }
-
-# remove.packages(c("tmaptools", "tmap", "sf"))
-# install.packages('sf', dependencies = TRUE)
-# install.packages('tmap', dependencies = TRUE)
-# install.packages('tmaptools', dependencies = TRUE)
-
-#remove.packages(c("tidyverse", "tibble"))
-#install.packages('tibble', dependencies = TRUE)
-#install.packages('tidyverse', dependencies = TRUE)
-#library(tidyverse)
-
-library(sf)
-library(tmap)
-library(tmaptools)
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
@@ -37,9 +23,6 @@ mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
 mpsz_sf <- st_as_sf(mpsz)
 ```
 
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 #Color 1 subzone
@@ -53,7 +36,8 @@ ggplot(houses_agg, aes(x = reorder(SUBZONE_N, mean_dist),
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
         legend.title = element_blank(),
         legend.position = "none") +
-  labs(x = "Subzone", y = "Mean distance")
+  labs(x = "Subzone", y = "Mean distance") +
+  scale_fill_manual(values = c('orangered', 'skyblue'))
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}

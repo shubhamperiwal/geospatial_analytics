@@ -216,13 +216,27 @@ write_csv(hawker, 'data/hawker-centres/hawker-centres.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-description <- hawker$Description[2]
-yo
+mrt <- read_csv('data/mrtstation/mrt.csv')
+
+extractDesc <- function(description){
+  substring <- substr(description, gregexpr('<td>', description)[1][[1]][1] + 4,
+                    gregexpr('</td>', description)[1][[1]][1] -1)
+  return(substring)
+}
+
+list <- lapply(X = mrt$Description, FUN = extractDesc)
+list <- mrt %>% sapply(X = list, FUN = toString )
+
+mrt$desc <- list
+mrt <- mrt %>% select(-c(Description))
+mrt <- mrt %>% select(Name, desc, everything())
+write_csv(mrt, 'data/mrtstation/mrt.csv')
+
 ```
 
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-substr(description, gregexpr('<td>', description)[1][[1]][18], 1500)
+mrt$Description[1][[1]]
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}

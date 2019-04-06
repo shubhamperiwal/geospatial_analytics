@@ -1,0 +1,75 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('ggmap', 'rgdal','qdapTools', 'spatstat', 'readr', 'dplyr', 'sf', 'tmap','tmaptools')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+ogrListLayers(dsn='data/mp_region/MP14_REGION_WEB_PL.kml')
+
+mpr <- readOGR(dsn='data/mp_region/MP14_REGION_WEB_PL.kml', layer='MP14_REGION_WEB_PL')
+mpr_sf <- st_as_sf(mpr)
+
+houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
+houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+tmap_mode("view")
+tm_shape(mpr[mpr$Name=="NORTH REGION",]) + tm_polygons() +
+  tm_shape(houses_sf[houses_sf$REGION_N=="NORTH REGION", ]) +
+    tm_dots(col='min_dist_clinic',
+            style='quantile',
+            size=0.1)
+  
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+
+```
