@@ -66,15 +66,50 @@ tmap_mode('view')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+foo <- vector(mode="list", length=2)
+names(foo) <- c("busStop", "schools")
 
+busStop <- read_csv('data/busStops/bus-stops.csv')
+schools <- read_csv('data/schools/schools.csv')
+
+busStop_sf <- st_as_sf(busStop, coords=c("lon", "lat"))
+foo[[1]] <- busStop_sf
+foo[[2]] <- schools
+
+input <- 'busStop'
+
+str(foo)
+
+str(foo[input][1])
+
+yo <- foo[input][[1]]
+yo <- unlist(foo[[1]])
+
+head(yo)
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
+tmap_mode("plot")
+tm_shape(yo[yo$REGION_N=="NORTH REGION", ]) + tm_dots()
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+facilities_agg <- busStop_sf %>% group_by(SUBZONE_N) %>% summarise(count = n())
+mpsz_data <- mpsz@data
+mpsz_count <- left_join(mpsz_data, houses_agg)
+mpsz_count$count[is.na(mpsz_count$count)] <- 0
+mpsz@data <- mpsz_count
 
+tmap_mode("view")
+tm_shape(mpsz) +
+  tm_fill("count",
+          style = "quantile",
+          palette = "Blues",
+          thres.poly = 0) + 
+  tm_layout(legend.show = FALSE,
+            title.position = c("center", "center"), 
+            title.size = 20) +
+  tm_borders(alpha = 0.5)
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}

@@ -5,11 +5,11 @@ output: html_notebook
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 packages = c('ggmap', 'rgdal','qdapTools', 'spatstat', 'readr', 'dplyr', 'sf', 'tmap','tmaptools')
-for (p in packages){ 
+for (p in packages){
   if(!require(p, character.only = T)){
-    install.packages(p) 
+    install.packages(p)
   }
-  library(p,character.only = T) 
+  library(p,character.only = T)
 }
 ```
 
@@ -33,20 +33,20 @@ clinics_sf <- st_as_sf(clinics, coords=c("lon", "lat"))
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 
 tmap_mode("view")
-  tm_shape(mpsz[mpsz$PLN_AREA_N=="BISHAN", ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1) + 
+  tm_shape(mpsz[mpsz$PLN_AREA_N=="BISHAN", ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1) +
   tm_shape(mpa[mpa$Name=="BISHAN",]) + tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
-  tm_shape(houses_sf[houses_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 5353.2), size=0.05) 
-  
+  tm_shape(houses_sf[houses_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 5353.2), size=0.05)
+
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 clinicicon <- tmap_icons(file = 'ICONs/hospital.png', width = 48, height = 48, keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
 
 tmap_mode("view")
-  tm_shape(mpsz[mpsz$PLN_AREA_N=="BISHAN", ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1) + 
+  tm_shape(mpsz[mpsz$PLN_AREA_N=="BISHAN", ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1) +
   tm_shape(mpa[mpa$Name=="BISHAN",]) + tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
   tm_shape(houses_sf[houses_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 5353.2), size=0.05) +
-  tm_shape(clinics_sf[clinics_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(size = .3, alpha = .5, shape = clinicicon) 
+  tm_shape(clinics_sf[clinics_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(size = .3, alpha = .5, shape = clinicicon)
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}

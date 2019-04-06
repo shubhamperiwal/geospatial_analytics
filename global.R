@@ -1,6 +1,6 @@
 
 ##Loading library packages
-packages = c('shiny','leaflet','markdown','raster', 'rgdal', 'sf', 'sp', 'ClustGeo', 'spdep','tmap','readr','ggmap','spatstat','qdapTools','tidyverse','ggplot2','DT')
+packages = c('shiny','leaflet','ahp','ahpsurvey','markdown','httr','raster', 'rgdal', 'sf', 'sp', 'ClustGeo', 'spdep','tmap','readr','ggmap','spatstat','qdapTools','tidyverse','ggplot2','DT')
 for (p in packages){ 
   if(!require(p, character.only = T)){
     install.packages(p) 
@@ -10,37 +10,32 @@ for (p in packages){
 
 ##Load Data into R
 mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
-houses <- read.csv('data/resale-flat-prices/all_flats.csv')
-busStops <- readOGR(dsn='data/BusStop', layer='BusStop')
-parks <- st_read(dsn='data/parks', layer='NATIONALPARKS')
-busStops.data <- busStops@data
-busStops.data <- distinct(busStops@data, 'BUS_sTOP_N')
-taxis <- readOGR(dsn='data/taxistand', layer='TaxiStop')
-gpclinics <- read_csv('data/clinics/gpclinics.csv')
-clinics <- readOGR(dsn="data/clinics/MOH_CHAS_CLINICS.kml", layer="MOH_CHAS_CLINICS")
-ogrListLayers('data/mrtstation/lta-mrt-station-exit-kml.kml')
-mrt <- readOGR(dsn='data/mrtstation/lta-mrt-station-exit-kml.kml',layer='MRT_EXITS')
-pre_schools <- readOGR(dsn="data/schools/pre-schools-location-kml.kml", layer="PRESCHOOLS_LOCATION")
-ogrListLayers(dsn='data/singapore-police-force-establishment/singapore-police-force-establishments-2018-kml.kml')
-spfs <- readOGR(dsn='data/singapore-police-force-establishment/singapore-police-force-establishments-2018-kml.kml', layer='SPF_ESTABLISHMENTS_2018')
-ogrListLayers(dsn='data/hawker-centres/hawker-centres-kml.kml')
-hawkers <- readOGR(dsn='data/hawker-centres/hawker-centres-kml.kml', layer='HAWKERCENTRE')
+mpr <- readOGR(dsn='data/mp_region', layer='MP14_REGION_WEB_PL')
+mpa <- readOGR(dsn='data/mp_planning_area', layer='MP14_PLNG_AREA_WEB_PL')
+
 schools <- read_csv('data/schools/schools.csv')
+busStops <- read_csv('data/busStops/bus-stops.csv')
+gpclinics <- read_csv('data/clinics/clinics.csv')
+hawkers <- read_csv('data/hawker-centres/hawker-centres.csv')
+mrt <- read_csv('data/mrtstation/mrt.csv')
+spfs <- read_csv('data/singapore-police-force-establishment/spf.csv')
+houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
 
 
 ##Data preparation
-busStops_sf <- st_as_sf(busStops)
+busStops_sf <- st_as_sf(busStops, coords=c("lon", "lat"))
+busStops_sf <- st_set_crs(busStops_sf, 4326)
 busStops_sf <- st_transform(busStops_sf, 3414)
 
 clinics_sf <- st_as_sf(gpclinics, coords = c("lon", "lat"))
 clinics_sf <- st_set_crs(clinics_sf, 4326)
 clinics_sf <- st_transform(clinics_sf, 3414)
 
-hawkers_sf <- st_as_sf(hawkers)
+hawkers_sf <- st_as_sf(hawkers, coords=c("lon", "lat"))
 hawkers_sf <- st_set_crs(hawkers_sf, 4326)
 hawkers_sf <- st_transform(hawkers_sf, 3414)
 
-mrts_sf <- st_as_sf(mrt)
+mrts_sf <- st_as_sf(mrt, coords=c("lon", "lat"))
 mrts_sf <- st_set_crs(mrts_sf, 4326)
 mrts_sf <- st_transform(mrts_sf, 3414)
 
@@ -48,36 +43,54 @@ schools_sf <- st_as_sf(schools, coords = c("lon", "lat"))
 schools_sf <- st_set_crs(schools_sf, 4326)
 schools_sf <- st_transform(schools_sf, 3414)
 
-spfs_sf <- st_as_sf(spfs)
+spfs_sf <- st_as_sf(spfs, coords=c("lon", "lat"))
 spfs_sf <- st_set_crs(spfs_sf, 4326)
 spfs_sf <- st_transform(spfs_sf, 3414)
 
 houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
-hc_sf <- st_as_sf(hawkers)
-hc_sf <- st_set_crs(hc_sf, 4326)
-hc_sf <- st_transform(hc_sf, 3414)
-
-taxis_sf <- st_as_sf(taxis)
-st_crs(taxis_sf) <- 4757
-proj4string(as(taxis_sf, 'Spatial'))
-st_crs(taxis_sf)
-taxis_sf <- st_set_crs(taxis_sf, 4326)
-taxis_sf <- st_transform(taxis_sf, 3414)
 
 
 
 
 
-##Find Distance matrix
-houses_group <- read_csv('data/resale-flat-prices/all_flats_grouped.csv')
-houses_group_sf <- st_as_sf(houses_group, coords = c("lon", "lat"))
-min_clinic <- houses_group_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_clinic))
-min_hawker <- houses_group_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_hawker))
-min_MRT <- houses_group_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_MRT))
-min_school <- houses_group_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_school))
+#AHP Calculation
+
+facilities <- c('busStop', 'clinics','hawkers','mrt','schools','spf')
+
+facility_sf_vector <- vector(mode="list", length=6)
+names(facility_sf_vector) <- facilities
+
+facility_sf_vector[[1]] <- busStops_sf
+facility_sf_vector[[2]] <- clinics_sf
+facility_sf_vector[[3]] <- hawkers_sf
+facility_sf_vector[[4]] <- mrts_sf
+facility_sf_vector[[5]] <- schools_sf
+facility_sf_vector[[6]] <- spfs_sf
+
+facility_dist_vector <- vector(mode="list", length=6)
+names(facility_dist_vector) <- facilities
+
+facility_dist_vector[[1]] <- "min_dist_busStop"
+facility_dist_vector[[2]] <- "min_dist_clinic"
+facility_dist_vector[[3]] <- "min_dist_hawker"
+facility_dist_vector[[4]] <- "min_dist_mrt"
+facility_dist_vector[[5]] <- "min_dist_school"
+facility_dist_vector[[6]] <- "min_dist_spf"
 
 
-
-
-
+weight_b_c <- 0 #Weight busstop_clinic. Bus stop is much higher priority than clinic
+weight_b_h <- 0
+weight_b_m <- 0
+weight_b_sc <- 0
+weight_b_sp <- 0
+weight_c_h <- 0
+weight_c_m <- 0
+weight_c_sc <- 0
+weight_c_sp <- 0
+weight_h_m <- 0
+weight_h_sc <- 0
+weight_h_sp <- 0
+weight_m_sc <- 0
+weight_m_sp <- 0
+weight_sc_sp <- 0
 
