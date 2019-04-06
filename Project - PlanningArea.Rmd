@@ -15,10 +15,10 @@ for (p in packages){
 
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-ogrListLayers(dsn='data/mp_region/MP14_REGION_WEB_PL.kml')
+ogrListLayers(dsn='data/mp_planning_area/MP14_PLNG_AREA_WEB_PL.kml')
 
-mpr <- readOGR(dsn='data/mp_region/MP14_REGION_WEB_PL.kml', layer='MP14_REGION_WEB_PL')
-mpr_sf <- st_as_sf(mpr)
+mpa <- readOGR(dsn='data/mp_planning_area/MP14_PLNG_AREA_WEB_PL.kml', layer='MP14_PLNG_AREA_WEB_PL')
+mpa_sf <- st_as_sf(mpa)
 
 houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
 houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
@@ -29,23 +29,22 @@ clinics_sf <- st_as_sf(clinics, coords=c("lon", "lat"))
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 tmap_mode("view")
-tm_shape(mpr[mpr$Name=="NORTH REGION",]) + tm_polygons() +
-  tm_shape(houses_sf[houses_sf$REGION_N=="NORTH REGION", ]) +
+tm_shape(mpa[mpa$Name=="BISHAN",]) + tm_polygons() +
+  tm_shape(houses_sf[houses_sf$PLN_AREA_N=="BISHAN", ]) +
     tm_dots(col='min_dist_clinic',
             style='quantile',
             size=0.1)
+  
 ```
-
-## Region with Schools
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 tmap_mode('view')
-tm_shape(mpr[mpr$Name=="NORTH REGION",]) + tm_polygons() +
-  tm_shape(houses_sf[houses_sf$REGION_N=="NORTH REGION", ]) +
+tm_shape(mpa[mpa$Name=="BISHAN",]) + tm_polygons() +
+  tm_shape(houses_sf[houses_sf$PLN_AREA_N=="BISHAN", ]) +
     tm_dots(col='min_dist_clinic',
             style='quantile',
-            size=0.1) +
-  tm_shape(clinics_sf[clinics_sf$REGION_N=="NORTH REGION", ]) +
+            size=0.1)+
+  tm_shape(clinics_sf[clinics_sf$PLN_AREA_N=="BISHAN", ]) +
     tm_dots(size=0.05)
 ```
 
