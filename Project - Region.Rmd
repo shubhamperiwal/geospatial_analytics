@@ -13,12 +13,14 @@ for (p in packages){
 }
 ```
 
-
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 ogrListLayers(dsn='data/mp_region/MP14_REGION_WEB_PL.kml')
 
 mpr <- readOGR(dsn='data/mp_region/MP14_REGION_WEB_PL.kml', layer='MP14_REGION_WEB_PL')
 mpr_sf <- st_as_sf(mpr)
+
+mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
+mpsz_sf <- st_as_sf(mpsz)
 
 houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
 houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
@@ -26,32 +28,35 @@ houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
 clinics <- read_csv('data/clinics/clinics.csv')
 clinics_sf <- st_as_sf(clinics, coords=c("lon", "lat"))
 ```
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#Summary statistics for setting the range:
+summary(houses)
+```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 tmap_mode("view")
-tm_shape(mpr[mpr$Name=="NORTH REGION",]) + tm_polygons() +
-  tm_shape(houses_sf[houses_sf$REGION_N=="NORTH REGION", ]) +
-    tm_dots(col='min_dist_clinic',
-            style='quantile',
-            size=0.1)
+  tm_shape(mpsz[mpsz$REGION_N=="NORTH REGION", ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1) + 
+  tm_shape(mpr[mpr$Name=="NORTH REGION",]) + tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
+  tm_shape(houses_sf[houses_sf$REGION_N=="NORTH REGION", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 5353.2), size=0.05)
+
 ```
 
+              
 ## Region with Schools
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-tmap_mode('view')
-tm_shape(mpr[mpr$Name=="NORTH REGION",]) + tm_polygons() +
-  tm_shape(houses_sf[houses_sf$REGION_N=="NORTH REGION", ]) +
-    tm_dots(col='min_dist_clinic',
-            style='quantile',
-            size=0.1) +
-  tm_shape(clinics_sf[clinics_sf$REGION_N=="NORTH REGION", ]) +
-    tm_dots(size=0.05)
-```
 
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+clinicicon <- tmap_icons(file = 'ICONs/hospital.png', width = 48, height = 48, keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
+
+tmap_mode("view")
+  tm_shape(mpsz[mpsz$REGION_N=="NORTH REGION", ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1) + 
+  tm_shape(mpr[mpr$Name=="NORTH REGION",]) + tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
+  tm_shape(houses_sf[houses_sf$REGION_N=="NORTH REGION", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 5353.2), size=0.05) +
+  tm_shape(clinics_sf[clinics_sf$REGION_N=="NORTH REGION", ]) + tm_dots(size = .1, alpha = .5, shape = clinicicon) 
+  
 
 ```
+
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 
