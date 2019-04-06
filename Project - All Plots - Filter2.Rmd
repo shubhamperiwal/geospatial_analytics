@@ -66,15 +66,36 @@ tmap_mode('view')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+foo <- vector(mode="list", length=2)
+names(foo) <- c("busStop", "schools")
 
+busStop <- read_csv('data/busStops/bus-stops.csv')
+schools <- read_csv('data/schools/schools.csv')
+
+busStop_sf <- st_as_sf(busStop, coords=c("lon", "lat"))
+foo[[1]] <- busStop_sf
+foo[[2]] <- schools
+
+input <- 'busStop'
+
+str(foo)
+
+str(foo[input][1])
+
+yo <- foo[input][[1]]
+yo <- unlist(foo[[1]])
+
+head(yo)
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
+tmap_mode("plot")
+tm_shape(yo[yo$REGION_N=="NORTH REGION", ]) + tm_dots()
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
+houses_all <- read_csv('data/resale-flat-prices/all_flats.csv')
+houses_all$address
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}

@@ -34,7 +34,6 @@ tm_shape(mpa[mpa$Name=="BISHAN",]) + tm_polygons() +
     tm_dots(col='min_dist_clinic',
             style='quantile',
             size=0.1)
-  
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}

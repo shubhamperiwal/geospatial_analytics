@@ -240,7 +240,10 @@ mrt$Description[1][[1]]
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
+spfs <- read_csv('data/singapore-police-force-establishment/spf.csv')
+spfs <- spfs %>% select(-c(Description))
+spfs <- spfs %>% select(Name, desc, everything())
+write_csv(spfs, 'data/singapore-police-force-establishment/spf.csv')
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
