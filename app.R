@@ -37,11 +37,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                    ),
                                    tags$li("Set range of accessibility To avoid calculating distance between all facilities and houses, "), 
                                    tags$li("Euclidean distance calculation is used to find the closest facility of each HDB and subsequently utilized to compute accessibility score."),
-                                   tags$li("Accessibility Score:"),
-                                   tags$ul(
-                                     tags$li("Analytic Hierarchy Process is considered when calculating accessibiliy score. It is a structured technique for organizing and analyzing complex decisions, based on mathematics and psychology."), 
-                                     tags$li("By assigning weightage through pairwise comparisons, AHP helps decision makers to find one that best suits their goal and their understanding of the problem.")
-                                   )
+                                   tags$li("Use Analytic Hierarchy Process to calculate Accessibility Score")
                                    )
                                  )
                              ),
@@ -225,12 +221,14 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                )
                                ,width=9))
                   ), tabPanel("About the team",
-                             withTags(
-                               div(class = "team_member1",
-                                   img(src = "Shubham.jpg", height = 150, width = 200,style="float:left;"),
-                                   h3("Shubham  Periwal"),
-                                   p("Junior year Analytics student in School of Information Systems. Still thinks Python > R."))
-                               ),
+                              withTags(
+                                div(class = "team_member3",
+                                    img(src = "Raynie.jpg", height = 150, width = 200,style="float:left;"),
+                                    h3(" Raynie Moo Wee Lim"),
+                                    p("Year 4 graduating student majoring in Information Systems and Organisational Behaviour and Human Resources.")
+                                )
+                              )
+                             ,
                              br(),
                              br(),
                              br(),
@@ -238,11 +236,11 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                              br(),
                              tags$hr(),
                              withTags(
-                               div(class = "team_member2",
-                                   img(src = "Kaelyn.jpg", height = 150, width = 200,style="float:left;"),
-                                   h3("Zhuo Yunying(Kaelyn)"),
-                                   p("Junior student studying Lee Kong Chain School of Business and currently double majoring in Operations Management and Analytics. She lives and breathes data analytics.")
-                               )
+                               div(class = "team_member1",
+                                   img(src = "Shubham.jpg", height = 150, width = 200,style="float:left;"),
+                                   h3("Shubham  Periwal"),
+                                   p("Junior year Analytics student in School of Information Systems. "),
+                                   p("Still thinks Python > R."))
                              ),
                              br(),
                              br(),
@@ -250,10 +248,11 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                              br(),
                              tags$hr(align="left"),
                              withTags(
-                               div(class = "team_member3",
-                                   img(src = "Raynie.jpg", height = 150, width = 200,style="float:left;"),
-                                   h3(" Raynie Moo Wee Lim"),
-                                   p("Year 4 graduating student majoring in Information Systems and Organisational Behaviour and Human Resources.")
+                               div(class = "team_member2",
+                                   img(src = "Kaelyn.jpg", height = 150, width = 200,style="float:left;"),
+                                   h3("Zhuo Yunying(Kaelyn)"),
+                                   p("Junior student studying Lee Kong Chain School of Business and currently double majoring in Operations Management and Analytics."),
+                                   p("She lives and breathes data analytics.")
                                )
                              )
                              )))
@@ -622,8 +621,8 @@ server <- function(input, output) {
                    theme(axis.text.x = element_text(angle = 90, hjust = 1),
                          legend.title = element_blank(),
                          legend.position = "none") +
-                   labs(x = "Subzone", y = "Mean distance"))+
-                scale_fill_manual(values = c('#336e7b','orange'))
+                   labs(x = "Subzone", y = "Mean of minimum distance"))+
+                scale_fill_manual(values = c('orange','#336e7b'))
           }
         }
       }
@@ -738,11 +737,10 @@ server <- function(input, output) {
                            size=ifelse(houses_agg$PLN_AREA_N==input$userinput,3, 2), alpha=0.7,face="bold") +
               geom_point(color=ifelse(houses_agg$PLN_AREA_N==input$userinput,"orange","#336e7b"), size=5, 
                          alpha=1) +
-              geom_text(nudge_y =10,family = "Trebuchet MS",color="#666666",face="bold") + #reduce  nudge_y if we have less rows (reduced to 10)
               coord_flip() +
               theme_dotplot +
-              xlab("Mean for Minimum Distance") +
-              ylab("Planning Area in Region for HDB Units")
+              ylab("Mean of Minimum Distance") +
+              xlab("Planning Areas")
           }
         }
         
@@ -793,25 +791,25 @@ server <- function(input, output) {
   ### Data table for Initial Plot###
   output$table <- DT::renderDataTable({
     if(input$databutton == "busStop"){
-      mydata <- busStops %>% select(c(Description, SUBZONE_N, PLN_AREA_N, REGION_N))
+      mydata <- busStops %>% dplyr::select(c(Description, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
     }else if(input$databutton == "spf"){
-      mydata <- spfs %>% select(c(desc, SUBZONE_N, PLN_AREA_N, REGION_N))
+      mydata <- spfs %>% dplyr::select(c(desc, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Name'='desc', 'Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
     }else if(input$databutton == "clinics"){
-      mydata <- gpclinics %>% select(c(name, SUBZONE_N, PLN_AREA_N, REGION_N))
+      mydata <- gpclinics %>% dplyr::select(c(name, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Name'='name','Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
     }else if(input$databutton == "mrt"){
-      mydata <- mrt %>% select(c(desc, SUBZONE_N, PLN_AREA_N, REGION_N))
+      mydata <- mrt %>% dplyr::select(c(desc, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Name' = 'desc', 'Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
     }else if(input$databutton == "schools"){
-      mydata <- schools %>% select(c(school_name, SUBZONE_N, PLN_AREA_N, REGION_N))
+      mydata <- schools %>% dplyr::select(c(school_name, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Name' = 'school_name', 'Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
     }else if(input$databutton == "houses"){
-      mydata <- houses %>% select(c(address, town, flat_type, SUBZONE_N, PLN_AREA_N, REGION_N))
+      mydata <- houses %>% dplyr::select(c(address, town, flat_type, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Address' = 'address', 'Town' = 'town', 'Flat Type'='flat_type', 'Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
     }else if(input$databutton == "hawkers"){
-      mydata <- hawkers %>% select(c(desc, SUBZONE_N, PLN_AREA_N, REGION_N))
+      mydata <- hawkers %>% dplyr::select(c(desc, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Name' = 'desc', 'Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
     }
   })
