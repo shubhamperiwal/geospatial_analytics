@@ -420,23 +420,13 @@ server <- function(input, output) {
   
   # ### For Barchart ###
   output$sz_barchart <-  renderPlot({
-    min_clinic <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_clinic))
-    min_clinic <- min_clinic[order(min_clinic$mean_dist),][c(1:input$upperLimit),]
-    min_hawker <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_hawker))
-    min_hawker <- min_hawker[order(min_hawker$mean_dist),][c(1:input$upperLimit),]
-    min_mrt <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_mrt))
-    min_mrt <- min_mrt[order(min_mrt$mean_dist),][c(1:input$upperLimit),]
-    min_spf <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_spf))
-    min_spf <- min_spf[order(min_spf$mean_dist),][c(1:input$upperLimit),]
-    min_school <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_preschool))
-    min_school <- min_school[order(min_school$mean_dist),][c(1:input$upperLimit),]
-    min_busStop <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_busStop))
-    min_busStop <- min_busStop[order(min_busStop$mean_dist),][c(1:input$upperLimit),]
     if(input$region == "WHOLE SINGAPORE"){
       if(input$test == "all"){
         
       }else{
         if(input$test == "busStop"){
+          min_busStop <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_busStop))
+          min_busStop <- min_busStop[order(min_busStop$mean_dist),][c(1:input$upperLimit),]
           plot(ggplot(min_busStop, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("red"))) +
                  geom_col() +
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
@@ -444,6 +434,9 @@ server <- function(input, output) {
                        legend.position = "none") +
                  labs(x = "Subzone", y = "Mean distance"))
         }else if(input$test == "spf"){
+          min_spf <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_spf))
+          min_spf <- min_spf[order(min_spf$mean_dist),][c(1:input$upperLimit),]
+          
           plot(ggplot(min_spf, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("red"))) +
                  geom_col() +
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
@@ -451,6 +444,9 @@ server <- function(input, output) {
                        legend.position = "none") +
                  labs(x = "Subzone", y = "Mean distance"))
         }else if(input$test == "clinics"){
+          min_clinic <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_clinic))
+          min_clinic <- min_clinic[order(min_clinic$mean_dist),][c(1:input$upperLimit),]
+          
           plot(ggplot(min_clinic, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("red"))) +
                  geom_col() +
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
@@ -458,6 +454,9 @@ server <- function(input, output) {
                        legend.position = "none") +
                  labs(x = "Subzone", y = "Mean distance"))
         }else if(input$test == "mrt"){
+          min_mrt <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_mrt))
+          min_mrt <- min_mrt[order(min_mrt$mean_dist),][c(1:input$upperLimit),]
+          
           plot(ggplot(min_mrt, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("red"))) +
                  geom_col() +
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
@@ -465,6 +464,9 @@ server <- function(input, output) {
                        legend.position = "none") +
                  labs(x = "Subzone", y = "Mean distance"))
         }else if(input$test == "schools"){
+          min_school <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_preschool))
+          min_school <- min_school[order(min_school$mean_dist),][c(1:input$upperLimit),]
+          
           plot(ggplot(min_school, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("red"))) +
                  geom_col() +
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
@@ -472,6 +474,9 @@ server <- function(input, output) {
                        legend.position = "none") +
                  labs(x = "Subzone", y = "Mean distance"))
         }else if(input$test == "hawkers"){
+          min_hawker <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_hawker))
+          min_hawker <- min_hawker[order(min_hawker$mean_dist),][c(1:input$upperLimit),]
+          
           plot(ggplot(min_hawker, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("red"))) +
                  geom_col() +
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
@@ -692,24 +697,31 @@ server <- function(input, output) {
     if(input$databutton == "busStop"){
       mydata <- busStops %>% select(c(Description, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
+      
     }else if(input$databutton == "spf"){
       mydata <- spfs %>% select(c(desc, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Name'='desc', 'Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
+      
     }else if(input$databutton == "clinics"){
       mydata <- gpclinics %>% select(c(name, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Name'='name','Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
+      
     }else if(input$databutton == "mrt"){
       mydata <- mrt %>% select(c(desc, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Name' = 'desc', 'Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
+      
     }else if(input$databutton == "schools"){
       mydata <- schools %>% select(c(school_name, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Name' = 'school_name', 'Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
+      
     }else if(input$databutton == "houses"){
       mydata <- houses %>% select(c(address, town, flat_type, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Address' = 'address', 'Town' = 'town', 'Flat Type'='flat_type', 'Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
+      
     }else if(input$databutton == "hawkers"){
       mydata <- hawkers %>% select(c(desc, SUBZONE_N, PLN_AREA_N, REGION_N))
       mydata %>% rename('Name' = 'desc', 'Subzone'='SUBZONE_N', 'Planning Area'='PLN_AREA_N', 'Region'='REGION_N')
+      
     }
   })
   

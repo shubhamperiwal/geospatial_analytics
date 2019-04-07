@@ -77,7 +77,6 @@ facility_dist_vector[[4]] <- "min_dist_mrt"
 facility_dist_vector[[5]] <- "min_dist_school"
 facility_dist_vector[[6]] <- "min_dist_spf"
 
-
 weight_b_c <- 0 #Weight busstop_clinic. Bus stop is much higher priority than clinic
 weight_b_h <- 0
 weight_b_m <- 0
