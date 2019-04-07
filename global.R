@@ -1,6 +1,5 @@
-
-##Loading library packages
-packages = c('shiny','leaflet','ahp','ahpsurvey','markdown','httr','raster', 'rgdal', 'sf', 'sp', 'ClustGeo', 'spdep','tmap','readr','ggmap','spatstat','qdapTools','tidyverse','ggplot2','DT')
+#Loading library packages
+packages = c('shiny','shinythemes','leaflet','ahp','ahpsurvey','markdown','httr','raster', 'rgdal', 'sf', 'sp', 'ClustGeo', 'spdep','tmap','readr','ggmap','spatstat','qdapTools','tidyverse','ggplot2','DT')
 for (p in packages){ 
   if(!require(p, character.only = T)){
     install.packages(p) 
@@ -10,8 +9,8 @@ for (p in packages){
 
 ##Load Data into R
 mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
-mpr <- readOGR(dsn='data/mp_region', layer='MP14_REGION_WEB_PL')
-mpa <- readOGR(dsn='data/mp_planning_area', layer='MP14_PLNG_AREA_WEB_PL')
+mpr <- readOGR(dsn='data/mp_region/MP14_REGION_WEB_PL.kml', layer='MP14_REGION_WEB_PL')
+mpa <- readOGR(dsn='data/mp_planning_area/MP14_PLNG_AREA_WEB_PL.kml', layer='MP14_PLNG_AREA_WEB_PL')
 
 schools <- read_csv('data/schools/schools.csv')
 busStops <- read_csv('data/busStops/bus-stops.csv')
@@ -77,6 +76,7 @@ facility_dist_vector[[4]] <- "min_dist_mrt"
 facility_dist_vector[[5]] <- "min_dist_school"
 facility_dist_vector[[6]] <- "min_dist_spf"
 
+
 weight_b_c <- 0 #Weight busstop_clinic. Bus stop is much higher priority than clinic
 weight_b_h <- 0
 weight_b_m <- 0
@@ -93,3 +93,50 @@ weight_m_sc <- 0
 weight_m_sp <- 0
 weight_sc_sp <- 0
 
+#Breaks for distance
+breaks_fac <- c(0, 100 ,200, 300, 400, 500, 600, 700, 800, 8200)
+
+#Add colour palette
+colour_palette <- 'GnBu'
+
+#Dot Plot
+theme_dotplot <- 
+  theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=12),
+        panel.background = element_rect(fill = "#e4e9ed",
+                                        size = 0.25, linetype = "solid"),
+        panel.grid.major = element_line(size = 0.3, linetype = 'solid',
+                                        colour = "white"),
+        panel.grid.minor = element_line(size = 0.3, linetype = 'solid',
+                                        colour = "white"),
+        panel.border = element_blank(),
+        axis.ticks.y = element_blank())
+
+
+busicon <- tmap_icons(file = 'ICONs/bus.png', width = 48, height = 48, 
+                      keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
+
+clinicicon <- tmap_icons(file = 'ICONs/hospital.png', width = 48, height = 48, 
+                         keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
+
+hawkericon <- tmap_icons(file = 'ICONs/hawker.png', width = 48, height = 48, 
+                         keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
+
+spficon <- tmap_icons(file = 'ICONs/police.png', width = 48, height = 48, 
+                      keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
+
+schoolicon <- tmap_icons(file = 'ICONs/school.png', width = 48, height = 48, 
+                         keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
+
+mrticon <- tmap_icons(file = 'ICONs/train.png', width = 48, height = 48, 
+                      keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
+
+#Icon Vector
+facility_icon_vector <- vector(mode="list", length=6)
+names(facility_icon_vector) <- facilities
+
+facility_icon_vector[[1]] <- busicon
+facility_icon_vector[[2]] <- clinicicon
+facility_icon_vector[[3]] <- hawkericon
+facility_icon_vector[[4]] <- mrticon
+facility_icon_vector[[5]] <- schoolicon
+facility_icon_vector[[6]] <- spficon
