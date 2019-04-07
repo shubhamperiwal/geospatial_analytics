@@ -82,7 +82,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                  ),width=3),
                mainPanel(
                    fluidRow(
-                     column(10,h3("Facility Plot"))
+                     column(10,h3("Facilities Spatial Distribution and Chrolopleth Map"))
                    ),
                    fluidRow(
                      column(10,h4("Select facility to plot it's location and quantity per subzone"))
@@ -256,10 +256,6 @@ server <- function(input, output) {
         column(numericInput("hawker_mrt", "Hawker - MRT:", min=-9, max=9, value=-9, step=1),width=4),
         column(numericInput("school_spf", "School - Police Post:", min=-9, max=9, value=-3, step=1),width=4)
       )
-      # fluidRow(
-      #   column(width=11),
-      #   column(submitButton("Update View"),width=1)
-      # )
     )
   })
   
@@ -655,61 +651,39 @@ server <- function(input, output) {
   
   ### Map of our Data Plot###
   output$allPlot <-  renderLeaflet({
-    if(input$radio == "busStop"){
-      mydata <- tm_shape(mpsz) + tm_polygons() + tm_shape(busStops_sf) + tm_dots(size = 0.000001, col = "#7d4627") + 
-        tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
-    }else if(input$radio == "spf"){
-      mydata <- tm_shape(mpsz) + tm_polygons() + tm_shape(spfs_sf) + tm_dots(size = 0.01, col = "#7d4627") + 
-        tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
-    }else if(input$radio == "clinics"){
-      mydata <- tm_shape(mpsz) + tm_polygons() + tm_shape(clinics_sf) + tm_dots(size = 0.001, col = "#7d4627") + 
-        tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
-    }else if(input$radio == "mrt"){
-      mydata <- tm_shape(mpsz) + tm_polygons() + tm_shape(mrts_sf) + tm_dots(size = 0.01, col = "#7d4627") + 
-        tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
-    }else if(input$radio == "schools"){
-      mydata <- tm_shape(mpsz) + tm_polygons() + tm_shape(schools_sf) + tm_dots(size = 0.001, col = "#7d4627") + 
-        tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
-    }else if(input$radio == "houses"){
-      mydata <- tm_shape(mpsz) + tm_polygons() + tm_shape(houses_sf) + tm_dots(size = 0.001, col = "#7d4627") + 
-        tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
-    }else if(input$radio == "hawkers"){
-      mydata <- tm_shape(mpsz) + tm_polygons() + tm_shape(hawkers_sf) + tm_dots(size = 0.01, col = "#7d4627") + 
-        tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
-    }else{
-      mydata <- tm_shape(mpsz) + tm_polygons() + 
-        tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
+    facilities_map <- houses_sf 
+    if(input$radio %in% facilities){
+      facilities_map <- facility_sf_vector[input$radio][[1]]
     }
+      mydata <- tm_shape(mpsz) + tm_polygons() + 
+        tm_shape(facilities_map) + 
+          tm_dots(size = 0.01, col = "#7d4627") + 
+          tm_style("classic", bg.color="white") +
+          tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
+      
     tmap_leaflet(mydata)
   })
   
   ###Chrolopleth map###
   output$cmap <- renderLeaflet({
-    if(input$radio == "busStop"){
-      facilities_agg <- busStops_sf %>% group_by(SUBZONE_N) %>% summarise(count = n())
-    }else if(input$radio == "spf"){
-      facilities_agg <- spfs_sf %>% group_by(SUBZONE_N) %>% summarise(count = n())
-    }else if(input$radio == "clinics"){
-      facilities_agg <- clinics_sf %>% group_by(SUBZONE_N) %>% summarise(count = n())
-    }else if(input$radio == "mrt"){
-      facilities_agg <- mrts_sf %>% group_by(SUBZONE_N) %>% summarise(count = n())
-    }else if(input$radio == "schools"){
-      facilities_agg <- schools_sf %>% group_by(SUBZONE_N) %>% summarise(count = n())
-    }else if(input$radio == "houses"){
+    if(input$radio %in% facilities){
+      facilities_agg <- facility_sf_vector[input$radio][[1]] %>% group_by(SUBZONE_N) %>% summarise(count = n())
+    } else{
       facilities_agg <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(count = n())
-    }else if(input$radio == "hawkers"){
-      facilities_agg <- hawkers_sf %>% group_by(SUBZONE_N) %>% summarise(count = n())
-    }else{
-      facilities_agg <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(count = 0)
     }
+
       mpsz_data <- mpsz@data
       mpsz_count <- left_join(mpsz_data, facilities_agg)
       mpsz_count$count[is.na(mpsz_count$count)] <- 0
       mpsz@data <- mpsz_count
-      mydata <-tm_shape(mpsz) +tm_fill("count",style = "jenks",palette = "Blues",thres.poly = 0) + 
-        tm_layout(legend.show = FALSE,title.position = c("center", "center"), title.size = 20) +
-        tm_borders(alpha = 0.5)
-    tmap_leaflet(mydata)
+      mydata <-tm_shape(mpsz) +
+                  tm_fill("count", style = "jenks", palette = colour_palette, 
+                          title = "Count in each subzone") +
+                  tm_layout(legend.show = FALSE,title.position = c("center", "center"),
+                          title.size = 20) +
+                  tm_borders(alpha = 0.5) 
+      
+      tmap_leaflet(mydata)
   })
   
   
