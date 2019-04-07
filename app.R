@@ -175,13 +175,24 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                           h3("Bar Chart of Subzones"),
                                           plotOutput("sz_barchart", height = 350, width = "100%"))
                                  ),
-                                 column(12,
+                                 column(6,
                                         conditionalPanel(
                                           condition = "input.test =='all'",
-                                          h3("About AHP"),
-                                          div("Analytic Hierarchy Process is allows you to go through a structured thinking process when deciding which facility is more important to you and returns you with overall accessibilty score!
-                                              You get to compare pairwise facilities and assign them a weight! For instance, for the pair \"Bus Stop - Clinic\", if bus stop is extremely important to you, you should put 9. Otherwise, you should put -9 if clinic is very important to you. The higher the absolute value of number, the higher the degree of importance and lack of importance."))
-                                        
+                                          h3("About Analytic hierarchy process - AHP"),
+                                          p("AHP is utilised to give weightage to different criteria (like minimum distance from bus stops, clinics, etc."),
+                                          p("First a user enters his personal priority scores. Then overall weightage is given to the critera.
+                                            This weightage is then used in a formula to make the final decision AHP = SUM(Weight*MinDist for each feature)"),
+                                          p("The metric for scoring is provided to the right. The negative scores mean the same as the positive, except for the second criteria in the pair"))
+                                 ),
+                                 column(6,
+                                        conditionalPanel(
+                                          condition = "input.test =='all'",
+                                          h3("AHP - Scoring metrics"),
+                                          p("1 - Two characteristics are equally important"),
+                                          p("3 - The preferred characteristics are slightly more important"),
+                                          p("5 - The preferred characteristics are moderately more important"),
+                                          p("7 - The preferred characteristics are strongly more important"),
+                                          p("9 - The preferred characteristics are absolutely more important"))
                                  )
                                )
                                ,width=10)
@@ -229,9 +240,8 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                              withTags(
                                div(class = "team_member2",
                                    img(src = "Kaelyn.jpg", height = 150, width = 200,style="float:left;"),
-                                   h3("Zhou Yunying(Kaelyn)"),
-                                   p("Our team's objective is to analyse and determine how these facilities such as transportation, 
-                                      school and healthcare services would impact the accessibility level around HDB.")
+                                   h3("Zhuo Yunying(Kaelyn)"),
+                                   p("Junior student studying Lee Kong Chain School of Business and currently double majoring in Operations Management and Analytics. She lives and breathes data analytics.")
                                )
                              ),
                              br(),
