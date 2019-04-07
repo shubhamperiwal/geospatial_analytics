@@ -7,6 +7,8 @@ for (p in packages){
   library(p,character.only = T) 
 }
 
+ogrListLayers(dsn='data/mp_region/MP14_REGION_WEB_PL.kml')
+
 ##Load Data into R
 mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
 mpr <- readOGR(dsn='data/mp_region/MP14_REGION_WEB_PL.kml', layer='MP14_REGION_WEB_PL')
@@ -47,7 +49,8 @@ spfs_sf <- st_set_crs(spfs_sf, 4326)
 spfs_sf <- st_transform(spfs_sf, 3414)
 
 houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
-
+houses_sf <- st_set_crs(houses_sf, 4326)
+houses_sf <- st_transform(houses_sf, 3414)
 
 
 
@@ -97,7 +100,7 @@ weight_sc_sp <- 0
 breaks_fac <- c(0, 100 ,200, 300, 400, 500, 600, 700, 800, 8200)
 
 #Add colour palette
-colour_palette <- 'GnBu'
+colour_palette <- 'OrRd'
 
 #Dot Plot
 theme_dotplot <- 
@@ -110,7 +113,6 @@ theme_dotplot <-
                                         colour = "white"),
         panel.border = element_blank(),
         axis.ticks.y = element_blank())
-
 
 busicon <- tmap_icons(file = 'ICONs/bus.png', width = 48, height = 48, 
                       keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
@@ -128,6 +130,9 @@ schoolicon <- tmap_icons(file = 'ICONs/school.png', width = 48, height = 48,
                          keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
 
 mrticon <- tmap_icons(file = 'ICONs/train.png', width = 48, height = 48, 
+                      keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
+
+houseicon <- tmap_icons(file = 'ICONs/house.png', width = 48, height = 48, 
                       keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
 
 #Icon Vector

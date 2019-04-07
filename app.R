@@ -36,9 +36,12 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                      tags$li("Transform all spatial reference system to WGS 84")
                                    ),
                                    tags$li("Set range of accessibility To avoid calculating distance between all facilities and houses, "), 
-                                   tags$li("Euclidean distance calculation Used to find the closest facility of each HDB and give a score for accessibility."),
-                                   tags$li("User Interaction User can choose the accessibility they wish to observe and the appliaction will display the maps 
-                                           and graph to them")
+                                   tags$li("Euclidean distance calculation is used to find the closest facility of each HDB and subsequently utilized to compute accessibility score."),
+                                   tags$li("Accessibility Score:"),
+                                   tags$ul(
+                                     tags$li("Analytic Hierarchy Process is considered when calculating accessibiliy score. It is a structured technique for organizing and analyzing complex decisions, based on mathematics and psychology."), 
+                                     tags$li("By assigning weightage through pairwise comparisons, AHP helps decision makers to find one that best suits their goal and their understanding of the problem.")
+                                   )
                                    )
                                  )
                              ),
@@ -49,15 +52,14 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                  style = "width: 50%;",
                                  p("Our  can be expanded through the following:"),
                                  tags$ol(
-                                   tags$li("Allowing user to upload their own sets of data for analysis on the impact of 
+                                   tags$li("Allow users to upload their own sets of data for analysis on the impact of 
                                            accessibilities in Singapore or other parts of the world."),
-                                   tags$li("Allow adding of a single spatial point on the map and see how the point would impact
-                                           the accessibility across Singapore.")
-                                   )
-                                   )
-                           )
-                           
-                             ),
+                                   tags$li("Allow addition of a single spatial point on the map and see how the point would impact
+                                           the accessibility across Singapore."),
+                                   tags$li("Account for capacity and demand of facilities for calculation of more realistic accessibility score."),
+                                   tags$li("Consider network distance for calculation of minimum distance between HDB flats and facility.")
+                                   )))
+                           ),
                   tabPanel("Data",
                            sidebarLayout(
                              sidebarPanel(  
@@ -68,15 +70,15 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                fluidRow(
                                  column(10,
                                         radioButtons("radio", label = "Select Facility to plot:",
-                                                     choices = list("Default" = "default", 
-                                                                    "Bus Stop" = "busStop",
-                                                                    "Clinic"= "clinics",
-                                                                    "MRT-Station" = "mrt",
-                                                                    "Hawker" = "hawkers",
-                                                                    "Schools" = "schools",
-                                                                    "Singapore Police Force" = "spf",
-                                                                    "Houses" = "houses"),
-                                                     selected = "default"))
+                                                     choices = list(
+                                                       "Houses" = "houses",
+                                                       "Bus Stop" = "busStop",
+                                                        "Clinic"= "clinics",
+                                                        "MRT-Station" = "mrt",
+                                                        "Hawker" = "hawkers",
+                                                        "Schools" = "schools",
+                                                        "Singapore Police Force" = "spf"),
+                                                     selected = "houses"))
                                ),width=3),
                              mainPanel(
                                fluidRow(
@@ -101,7 +103,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                br(),
                                fluidRow(
                                  selectInput("test", label="Select Facility Type:",
-                                             choices = list("All" = "all", 
+                                             choices = list("AHP" = "all", 
                                                             "Bus Stop" = "busStop",
                                                             "Clinic"= "clinics",
                                                             "MRT-Station" = "mrt",
@@ -152,10 +154,11 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                ,width=2),
                              mainPanel(
                                fluidRow(
-                                 column(6,leafletOutput("xscore", height = 400, width = "100%")),
+                                 column(6,h3("Accessibility Plot"),leafletOutput("xscore", height = 400, width = "100%")),
                                  column(6,
                                         conditionalPanel(
                                           condition = "input.test !='all'",
+                                          h3("Lollipop Plot"),
                                           plotOutput("planning_area_barchart", height = 350, width = "100%"))
                                  ),
                                  column(6,
@@ -169,12 +172,15 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                  column(12,
                                         conditionalPanel(
                                           condition = "input.test !='all'",
+                                          h3("Bar Chart of Subzones"),
                                           plotOutput("sz_barchart", height = 350, width = "100%"))
                                  ),
                                  column(12,
                                         conditionalPanel(
                                           condition = "input.test =='all'",
-                                          plotOutput("AHP", height = 350, width = "100%"))
+                                          h3("About AHP"),
+                                          div("Analytic Hierarchy Process is allows you to go through a structured thinking process when deciding which facility is more important to you and returns you with overall accessibilty score!
+                                              You get to compare pairwise facilities and assign them a weight! For instance, for the pair \"Bus Stop - Clinic\", if bus stop is extremely important to you, you should put 9. Otherwise, you should put -9 if clinic is very important to you. The higher the absolute value of number, the higher the degree of importance and lack of importance."))
                                  )
                                )
                                ,width=10)
@@ -206,9 +212,42 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                  column(12,DT::dataTableOutput("table", width="100%"))
                                )
                                ,width=9))
-                  )
-                           )
+                  ), tabPanel("About the team",
+                             withTags(
+                               div(class = "team_member1",
+                                   img(src = "raynie.jpg", height = 150, width = 200,style="float:left;"),
+                                   h3("Shubham  Periwal"),
+                                   p("Our team's objective is to analyse and determine how these facilities such as transportation, 
+                                     school and healthcare services would impact the accessibility level around HDB.")
+                                   )
+                               ),
+                             br(),
+                             br(),
+                             br(),
+                             br(),
+                             br(),
+                             tags$hr(),
+                             withTags(
+                               div(class = "team_member2",
+                                   img(src = "raynie.jpg", height = 150, width = 200,style="float:left;"),
+                                   h3("Zhou Yunying(Kaelyn)"),
+                                   p("Our team's objective is to analyse and determine how these facilities such as transportation, 
+                                      school and healthcare services would impact the accessibility level around HDB.")
+                               )
+                             ),
+                             br(),
+                             br(),
+                             br(),
+                             br(),
+                             tags$hr(align="left"),
+                             withTags(
+                               div(class = "team_member3",
+                                   img(src = "raynie.jpg", height = 150, width = 200,style="float:left;"),
+                                   h3(" Raynie Moo Wee Lim"),
+                                   p("Year 4 graduating student majoring in Information Systems and Organisational Behaviour and Human Resources.")
+                               )
                              )
+                             )))
 # Define server logic ----
 server <- function(input, output) {
   
@@ -303,46 +342,74 @@ server <- function(input, output) {
         houses_sf$min_dist_school*priorities$schools  + houses_sf$min_dist_spf*priorities$spf
       
       if(input$region == "WHOLE SINGAPORE" ){ #AHP Whole SG
-        mydata <- tm_shape(mpsz) + tm_polygons() + tm_shape(houses_sf) +
-          tm_dots(col='ahp',style='quantile',size=0.01)+
-          tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
+        mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+          tm_basemap(server = NA, group = "Clear", alpha = 1) +
+          tm_shape(mpsz) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
+          tm_shape(mpsz) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
+          tm_shape(houses_sf) +
+          tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette)
+          
       }else{
         if(input$type == "Region"){#AHP Region
-          mydata <- tm_shape(mpr[mpr$Name==input$region, ]) + tm_polygons() + 
+          mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+            tm_basemap(server = NA, group = "Clear", alpha = 1) +
+            tm_shape(mpr[mpr$Name==input$region, ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
+            tm_shape(mpr[mpr$Name==input$region, ]) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
             tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) +
-            tm_dots(col='ahp',style='quantile',size=0.01) +
-            tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor") 
+            tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette)
+          
         }else if(input$type =="Subzone"){#AHP Subzone
-          mydata <- tm_shape(mpsz[mpsz$SUBZONE_N==input$userinput, ]) + tm_polygons() +
+          mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+            tm_basemap(server = NA, group = "Clear", alpha = 1) +
+            tm_shape(mpsz[mpsz$SUBZONE_N==input$userinput, ]) + 
+              tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
+            tm_shape(mpsz[mpsz$SUBZONE_N==input$userinput, ]) +
+              tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
             tm_shape(houses_sf[houses_sf$SUBZONE_N==input$userinput, ]) +
-            tm_dots(col='ahp',style='quantile',size=0.01) +
-            tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
+              tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette)
           
         }else if(input$type == "Planning Area"){#AHP Planning
-          mydata <- tm_shape(mpa[mpa$Name==input$userinput, ]) + tm_polygons() + 
+          
+          mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+            tm_basemap(server = NA, group = "Clear", alpha = 1) +
+            tm_shape(mpa[mpa$Name==input$userinput, ]) + 
+              tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
+            tm_shape(mpa[mpa$Name==input$userinput, ]) + 
+              tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
             tm_shape(houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]) +
-            tm_dots(col='ahp',style='quantile',size=0.01) +
-            tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
+             tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette)
         }else{
           
         }
       }
     }else{
       if(input$region == "WHOLE SINGAPORE" ){
-        mydata <-tm_shape(mpsz) + tm_polygons() + tm_shape(houses_sf) + 
-          tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''),
-                  style='quantile', size=0.01)+
-          tm_shape(facility_sf_vector[input$test][[1]]) + tm_dots(size=0.01)+
-          tm_style("classic", bg.color="white") + tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
+        fac_sf <- facility_sf_vector[input$test][[1]]
+        
+        mydata<-  tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+          tm_basemap(server = NA, group = "Clear", alpha = 1) +
+          tm_shape(mpsz) + 
+          tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
+          tm_shape(mpsz) + 
+          tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
+          tm_shape(houses_sf) + 
+          tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
+                  style='fixed', breaks =breaks_fac, size=0.05,
+                  palette = colour_palette) +
+          tm_shape(fac_sf) + 
+          tm_symbols(shape=2, size = 0.3, alpha = .5, border.col='black', col='white', scale=4/3) 
+        
+       
       }else{
+        fac_sf <- facility_sf_vector[input$test][[1]]
         if(input$type == "Subzone"){
           if(is.null(input$userinput)){
-            
-            fac_sf <- facility_sf_vector[input$test][[1]]
-            mydata<-  tm_shape(mpr[mpr$Name==input$region, ]) + 
+            mydata<-  tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+              tm_basemap(server = NA, group = "Clear", alpha = 1) +
+              tm_shape(mpr[mpr$Name==input$region, ]) + 
               tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
               tm_shape(mpr[mpr$Name==input$region,]) + 
-              tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3)+
+              tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
               tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) + 
               tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
                       style='fixed', breaks =breaks_fac, size=0.05,
@@ -351,12 +418,12 @@ server <- function(input, output) {
               tm_dots(size = .1, alpha = .5, shape = facility_icon_vector[input$test][[1]]) 
             
           }else{
-            fac_sf <- facility_sf_vector[input$test][[1]]
-            
-            mydata <- tm_shape(mpsz[mpsz$SUBZONE_N==input$userinput, ]) + 
+            mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+              tm_basemap(server = NA, group = "Clear", alpha = 1) +
+              tm_shape(mpsz[mpsz$SUBZONE_N==input$userinput, ]) + 
               tm_borders(lty = "dashed",col = '#d35400',lwd = 1) +
               tm_shape(mpsz[mpsz$SUBZONE_N==input$userinput,]) + 
-              tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
+              tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
               tm_shape(houses_sf[houses_sf$SUBZONE_N==input$userinput, ]) + 
               tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
                       style='fixed', breaks =breaks_fac, size=0.05,
@@ -367,11 +434,12 @@ server <- function(input, output) {
           }
         }else if(input$type == "Planning Area"){
           if(is.null(input$userinput)){
-            fac_sf <- facility_sf_vector[input$test][[1]]
-            mydata<-  tm_shape(mpr[mpr$Name==input$region, ]) + 
+            mydata<-  tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+              tm_basemap(server = NA, group = "Clear", alpha = 1) +
+              tm_shape(mpr[mpr$Name==input$region, ]) + 
               tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
               tm_shape(mpr[mpr$Name==input$region,]) + 
-              tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3)+
+              tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
               tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) + 
               tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
                       style='fixed', breaks = breaks_fac, size=0.05,
@@ -381,11 +449,12 @@ server <- function(input, output) {
               tm_shape(fac_sf[fac_sf$REGION_N==input$region, ]) + 
               tm_dots(size = .1, alpha = .5, shape = facility_icon_vector[input$test][[1]]) 
           }else{
-            fac_sf <- facility_sf_vector[input$test][[1]]
-            mydata <- tm_shape(mpa[mpa$Name==input$userinput,]) + 
+            mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+              tm_basemap(server = NA, group = "Clear", alpha = 1) +
+              tm_shape(mpa[mpa$Name==input$userinput,]) + 
               tm_borders(lty = "dashed",col = '#d35400',lwd = 1) +
               tm_shape(mpa[mpa$Name==input$userinput,]) + 
-              tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
+              tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
               tm_shape(houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]) + 
               tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
                       style='fixed', breaks =breaks_fac, size=0.05,
@@ -396,11 +465,12 @@ server <- function(input, output) {
               tm_dots(size = .3, alpha = .5,shape = facility_icon_vector[input$test][[1]]) 
           }
         }else{
-          fac_sf <- facility_sf_vector[input$test][[1]]
-          mydata<-  tm_shape(mpr[mpr$Name==input$region, ]) + 
+          mydata<-  tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+            tm_basemap(server = NA, group = "Clear", alpha = 1) +
+            tm_shape(mpr[mpr$Name==input$region, ]) + 
             tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
             tm_shape(mpr[mpr$Name==input$region,]) + 
-            tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3)+
+            tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
             tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) + 
             tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''),
                     style='fixed', breaks = breaks_fac, size=0.05,
@@ -435,47 +505,53 @@ server <- function(input, output) {
         
       }else{
         if(input$test == "busStop"){
-          plot(ggplot(min_busStop, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("red"))) +
+          plot(ggplot(min_busStop, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("#336e7b"))) +
                  geom_col() +
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
                        legend.title = element_blank(),
                        legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))
+                 labs(x = "Subzone", y = "Mean distance"))+
+            scale_fill_manual(values = c('#336e7b'))
         }else if(input$test == "spf"){
-          plot(ggplot(min_spf, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("red"))) +
+          plot(ggplot(min_spf, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("#336e7b"))) +
                  geom_col() +
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
                        legend.title = element_blank(),
                        legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))
+                 labs(x = "Subzone", y = "Mean distance"))+
+            scale_fill_manual(values = c('#336e7b'))
         }else if(input$test == "clinics"){
-          plot(ggplot(min_clinic, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("red"))) +
+          plot(ggplot(min_clinic, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("#336e7b"))) +
                  geom_col() +
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
                        legend.title = element_blank(),
                        legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))
+                 labs(x = "Subzone", y = "Mean distance"))+
+            scale_fill_manual(values = c('#336e7b'))
         }else if(input$test == "mrt"){
-          plot(ggplot(min_mrt, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("red"))) +
+          plot(ggplot(min_mrt, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("#336e7b"))) +
                  geom_col() +
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
                        legend.title = element_blank(),
                        legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))
+                 labs(x = "Subzone", y = "Mean distance"))+
+            scale_fill_manual(values = c('#336e7b'))
         }else if(input$test == "schools"){
-          plot(ggplot(min_school, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("red"))) +
+          plot(ggplot(min_school, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("#336e7b"))) +
                  geom_col() +
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
                        legend.title = element_blank(),
                        legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))
+                 labs(x = "Subzone", y = "Mean distance"))+
+            scale_fill_manual(values = c('#336e7b'))
         }else if(input$test == "hawkers"){
-          plot(ggplot(min_hawker, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("red"))) +
+          plot(ggplot(min_hawker, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("#336e7b"))) +
                  geom_col() +
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
                        legend.title = element_blank(),
                        legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))
+                 labs(x = "Subzone", y = "Mean distance"))+
+            scale_fill_manual(values = c('#336e7b'))
         }
       }
     }else{
@@ -499,29 +575,32 @@ server <- function(input, output) {
         
         if(input$type =="Region"){
           plot(ggplot(houses_agg, aes(x = reorder(SUBZONE_N, mean_dist),y = mean_dist,
-                                      fill=("red"))) + 
+                                      fill=("#336e7b"))) + 
                  geom_col() + 
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
                        legend.title = element_blank(),
                        legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))
+                 labs(x = "Subzone", y = "Mean distance"))+
+            scale_fill_manual(values = c('#336e7b'))
         }else{
           if(is.null(input$userinput)){
             plot(ggplot(houses_agg, aes(x = reorder(SUBZONE_N, mean_dist),y = mean_dist,
-                                        fill=("red"))) + 
+                                        fill=("#336e7b"))) + 
                    geom_col() + 
                    theme(axis.text.x = element_text(angle = 90, hjust = 1),
                          legend.title = element_blank(),
                          legend.position = "none") +
-                   labs(x = "Subzone", y = "Mean distance"))           
-          }else{
+                   labs(x = "Subzone", y = "Mean distance")) +
+              scale_fill_manual(values = c('#336e7b'))
+            }else{
             plot(ggplot(houses_agg, aes(x = reorder(SUBZONE_N, mean_dist),y = mean_dist,
-                                        fill=ifelse(SUBZONE_N==input$userinput,"green","red"))) + 
+                                        fill=ifelse(SUBZONE_N==input$userinput,"highlight","normal"))) + 
                    geom_col() + 
                    theme(axis.text.x = element_text(angle = 90, hjust = 1),
                          legend.title = element_blank(),
                          legend.position = "none") +
-                   labs(x = "Subzone", y = "Mean distance"))
+                   labs(x = "Subzone", y = "Mean distance"))+
+                scale_fill_manual(values = c('orange','#336e7b'))
           }
         }
       }
@@ -545,55 +624,65 @@ server <- function(input, output) {
     
     if(input$region == "WHOLE SINGAPORE"){
       if(input$test == "all"){
-        
       }else{
         if(input$test == "busStop"){
-          plot(ggplot(min_busStop2, aes(x = reorder(PLN_AREA_N, mean_dist), mean_dist,fill=("red"))) +
-                 geom_col() +
-                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                       legend.title = element_blank(),
-                       legend.position = "none") +
-                 labs(x = "Planning Area", y = "Mean distance"))
+          plot(ggplot(min_busStop2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
+                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
+                 geom_point( color="#336e7b", size=5, alpha=1) +
+                 
+                 coord_flip() +
+                 theme_dotplot +
+                 ylab("Mean for Minimum Distance") +
+                 xlab("Region for HDB Units"))
         }else if(input$test == "spf"){
-          plot(ggplot(min_spf2, aes(x = reorder(PLN_AREA_N, mean_dist), mean_dist,fill=("red"))) +
-                 geom_col() +
-                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                       legend.title = element_blank(),
-                       legend.position = "none") +
-                 labs(x = "Planning Area", y = "Mean distance"))
+          plot(ggplot(min_spf2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
+                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
+                 geom_point( color="#336e7b", size=5, alpha=1) +
+                 
+                 coord_flip() +
+                 theme_dotplot +
+                 ylab("Mean for Minimum Distance") +
+                 xlab("Region for HDB Units"))
         }else if(input$test == "clinics"){
-          plot(ggplot(min_clinic2, aes(x = reorder(PLN_AREA_N, mean_dist), mean_dist,fill=("red"))) +
-                 geom_col() +
-                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                       legend.title = element_blank(),
-                       legend.position = "none") +
-                 labs(x = "Planning Area", y = "Mean distance"))
+          plot(ggplot(min_clinic2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
+                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
+                 geom_point( color="#336e7b", size=5, alpha=1) +
+                 
+                 coord_flip() +
+                 theme_dotplot +
+                 ylab("Mean for Minimum Distance") +
+                 xlab("Region for HDB Units"))
         }else if(input$test == "mrt"){
-          plot(ggplot(min_mrt2, aes(x = reorder(PLN_AREA_N, mean_dist), mean_dist,fill=("red"))) +
-                 geom_col() +
-                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                       legend.title = element_blank(),
-                       legend.position = "none") +
-                 labs(x = "Planning Area", y = "Mean distance"))
+          plot(ggplot(min_mrt2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
+                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
+                 geom_point( color="#336e7b", size=5, alpha=1) +
+                 
+                 coord_flip() +
+                 theme_dotplot +
+                 ylab("Mean for Minimum Distance") +
+                 xlab("Region for HDB Units"))
         }else if(input$test == "schools"){
-          plot(ggplot(min_school2, aes(x = reorder(PLN_AREA_N, mean_dist), mean_dist,fill=("red"))) +
-                 geom_col() +
-                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                       legend.title = element_blank(),
-                       legend.position = "none") +
-                 labs(x = "Planning Area", y = "Mean distance"))
+          plot(ggplot(min_school2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
+                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
+                 geom_point( color="#336e7b", size=5, alpha=1) +
+                 
+                 coord_flip() +
+                 theme_dotplot +
+                 ylab("Mean for Minimum Distance") +
+                 xlab("Region for HDB Units"))
         }else if(input$test == "hawkers"){
-          plot(ggplot(min_hawker2, aes(x = reorder(PLN_AREA_N, mean_dist), mean_dist,fill=("red"))) +
-                 geom_col() +
-                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                       legend.title = element_blank(),
-                       legend.position = "none") +
-                 labs(x = "Planning Area", y = "Mean distance"))
+          plot(ggplot(min_hawker2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
+                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
+                 geom_point( color="#336e7b", size=5, alpha=1) +
+                 
+                 coord_flip() +
+                 theme_dotplot +
+                 ylab("Mean for Minimum Distance") +
+                 xlab("Region for HDB Units"))
         }
       }
     }else{
       if(input$test == "all"){
-        
       }else{
         if(input$test == "busStop"){
           houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_busStop))
@@ -608,36 +697,31 @@ server <- function(input, output) {
         }else if(input$test == "hawkers"){
           houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_hawker))
         }
-        if(input$type =="Region"){
-          plot(ggplot(houses_agg,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist, 
-                                     label=round(mean_dist,2))) +
-                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
+        if(input$type =="Region" || input$type == "Subzone"){
+          plot(ggplot(houses_agg,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
+                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), 
+                               color="#535c68", size=2, alpha=0.7,face="bold") +
                  geom_point( color="#336e7b", size=5, alpha=1) +
-                 geom_text(nudge_y = 20,family = "Trebuchet MS",color="#666666",face="bold") +
+                 
                  coord_flip() +
                  theme_dotplot +
                  ylab("Mean for Minimum Distance") +
                  xlab("Region for HDB Units"))
         }else{
-          if(is.null(input$userinput)){
-            plot(ggplot(houses_agg, aes(x = reorder(PLN_AREA_N, mean_dist),y = mean_dist,
-                                        fill=("red"))) + 
-                   geom_col() + 
-                   theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                         legend.title = element_blank(),
-                         legend.position = "none") +
-                   labs(x = "Planning Area", y = "Mean distance"))           
-          }else{
-            plot(ggplot(houses_agg, aes(x = reorder(PLN_AREA_N, mean_dist),y = mean_dist,
-                                        fill=ifelse(PLN_AREA_N==input$userinput,"green","red"))) + 
-                   geom_col() + 
-                   theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                         legend.title = element_blank(),
-                         legend.position = "none") +
-                   labs(x = "Planning Area", y = "Mean distance"))
+          if(!is.null(input$userinput)){
+            ggplot(houses_agg,aes(x = reorder(PLN_AREA_N, -mean_dist), y=mean_dist)) +
+              geom_segment(aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), 
+                           color=ifelse(houses_agg$PLN_AREA_N==input$userinput,"orange", "#535c68"), 
+                           size=ifelse(houses_agg$PLN_AREA_N==input$userinput,3, 2), alpha=0.7,face="bold") +
+              geom_point(color=ifelse(houses_agg$PLN_AREA_N==input$userinput,"orange","#336e7b"), size=5, 
+                         alpha=1) +
+              geom_text(nudge_y =10,family = "Trebuchet MS",color="#666666",face="bold") + #reduce  nudge_y if we have less rows (reduced to 10)
+              coord_flip() +
+              theme_dotplot +
+              xlab("Mean for Minimum Distance") +
+              ylab("Planning Area in Region for HDB Units")
           }
         }
-        
         
       }
     }
@@ -646,18 +730,16 @@ server <- function(input, output) {
   ### Map of our Data Plot###
   output$allPlot <-  renderLeaflet({
     facilities_map <- houses_sf 
-    shape_icon <- 22
     if(input$radio %in% facilities){
       facilities_map <- facility_sf_vector[input$radio][[1]]
-      shape_icon <- facility_icon_vector[input$radio][[1]]
     }
-    mydata <- tm_shape(mpsz) + tm_polygons() + 
+    mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+      tm_basemap(server = NA, group = "Clear", alpha = 1) +
+      tm_shape(mpsz) + tm_polygons(alpha=0, border.col = '#2f3542', lwd = 1) + 
       tm_shape(facilities_map) + 
-      tm_dots(size = 0.1, col = "#7d4627", shape = shape_icon) + 
-      tm_style("classic", bg.color="white") +
-      tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
+      tm_dots(size = 0.03, col = '#82ccdd', border.col='black')
     
-    tmap_leaflet(mydata)
+      tmap_leaflet(mydata)
   })
   
   ###Chrolopleth map###
@@ -672,12 +754,14 @@ server <- function(input, output) {
     mpsz_count <- left_join(mpsz_data, facilities_agg)
     mpsz_count$count[is.na(mpsz_count$count)] <- 0
     mpsz@data <- mpsz_count
-    mydata <-tm_shape(mpsz) +
-      tm_fill("count", style = "jenks", palette = colour_palette, 
+    mydata <-tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+      tm_basemap(server = NA, group = "Clear", alpha = 1) +
+      tm_shape(mpsz) +
+      tm_fill("count", style = "jenks", palette = 'GnBu', 
               title = "Count in each subzone") +
       tm_layout(legend.show = FALSE,title.position = c("center", "center"),
                 title.size = 20) +
-      tm_borders(alpha = 0.5) 
+      tm_borders(lty = "dashed",col = '#192a56',lwd = 1)
     
     tmap_leaflet(mydata)
   })
