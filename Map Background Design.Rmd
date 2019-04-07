@@ -30,45 +30,21 @@ clinics <- read_csv('data/clinics/clinics.csv')
 clinics_sf <- st_as_sf(clinics, coords=c("lon", "lat"))
 ```
 
-map provider:
-
-http://leaflet-extras.github.io/leaflet-providers/preview/
-
-github tutorial:
-https://github.com/leaflet-extras/leaflet-providers
-
-tm_basemap documentation:
-https://www.rdocumentation.org/packages/tmap/versions/2.2/topics/tm_basemap
-
-mapbox map type:
-https://docs.mapbox.com/mapbox-gl-js/example/setstyle/
-
-my token for mapbox
-pk.eyJ1Ijoia2FleXl5IiwiYSI6ImNqdTUydmxxZDE0Yng0MG83NXZiM2pxcmEifQ.7AUuIpUW08En9Dzn4axKAA
-
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-tmap_mode("view")
-  tm_shape(mpsz[mpsz$PLN_AREA_N=="BISHAN", ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1) +
-  tm_shape(mpa[mpa$Name=="BISHAN",]) + tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
-  tm_shape(houses_sf[houses_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 600, 700, 800, 8200), size=0.05, palette = 'GnBu') +
-  tm_basemap(server = )
-
-```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 clinicicon <- tmap_icons(file = 'ICONs/hospital.png', width = 48, height = 48, keep.asp = TRUE, just = c("center", "center"), as.local = TRUE)
 
 tmap_mode("view")
+  tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+  tm_basemap(server = NA, group = "Clear", alpha = 1) +
+  tm_basemap(server = leaflet::providers$Stamen.Watercolor, group = "Aesthetic", alpha = 1) +
   tm_shape(mpsz[mpsz$PLN_AREA_N=="BISHAN", ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1) +
-  tm_shape(mpa[mpa$Name=="BISHAN",]) + tm_polygons(col = '#fdcb6e', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
-  tm_shape(houses_sf[houses_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 600, 700, 800, 8200), size=0.05, palette = 'GnBu') +
+  tm_shape(mpa[mpa$Name=="BISHAN",]) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
+  tm_shape(houses_sf[houses_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(col='min_dist_clinic', style='fixed', breaks = c(0, 100 ,200, 300, 400, 500, 600, 700, 800, 8200), size=0.1, palette = 'OrRd') +
   tm_shape(clinics_sf[clinics_sf$PLN_AREA_N=="BISHAN", ]) + tm_dots(size = .3, alpha = .5, shape = clinicicon)
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
 
 ```
 
