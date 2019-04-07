@@ -141,3 +141,35 @@ tm_shape(mpsz) + tm_polygons() +
   tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
 ```
 
+#Plot Choropleth Map 
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+mrt <- read_csv('data/mrtstation/mrt.csv')
+
+mrts_sf <- st_as_sf(mrt, coords=c("lon", "lat"))
+mrts_sf <- st_set_crs(mrts_sf, 4326)
+mrts_sf <- st_transform(mrts_sf, 3414)
+
+facilities_agg <- mrts_sf %>% group_by(SUBZONE_N) %>% summarise(count = n())
+
+mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
+mpr <- readOGR(dsn='data/mp_region/MP14_REGION_WEB_PL.kml', layer='MP14_REGION_WEB_PL')
+mpa <- readOGR(dsn='data/mp_planning_area/MP14_PLNG_AREA_WEB_PL.kml', layer='MP14_PLNG_AREA_WEB_PL')
+
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+mpsz_data <- mpsz@data
+mpsz_count <- left_join(mpsz_data, facilities_agg)
+mpsz_count$count[is.na(mpsz_count$count)] <- 0
+mpsz@data <- mpsz_count
+
+mydata <-tm_shape(mpsz) +tm_fill("count", style = "jenks", palette = "GnBu", title = "Count of Facility") +
+  tm_layout(legend.show = FALSE,title.position = c("center", "center"), title.size = 20) +
+  tm_borders(alpha = 0.5) 
+
+tmap_leaflet(mydata)
+
+  
+```
+

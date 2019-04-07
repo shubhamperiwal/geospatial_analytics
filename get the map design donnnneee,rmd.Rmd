@@ -69,6 +69,7 @@ tmap_mode("view")
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 
+
 ```
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
