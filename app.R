@@ -181,6 +181,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                           h3("About AHP"),
                                           div("Analytic Hierarchy Process is allows you to go through a structured thinking process when deciding which facility is more important to you and returns you with overall accessibilty score!
                                               You get to compare pairwise facilities and assign them a weight! For instance, for the pair \"Bus Stop - Clinic\", if bus stop is extremely important to you, you should put 9. Otherwise, you should put -9 if clinic is very important to you. The higher the absolute value of number, the higher the degree of importance and lack of importance."))
+                                        
                                  )
                                )
                                ,width=10)
@@ -215,11 +216,9 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                   ), tabPanel("About the team",
                              withTags(
                                div(class = "team_member1",
-                                   img(src = "raynie.jpg", height = 150, width = 200,style="float:left;"),
+                                   img(src = "Shubham.jpg", height = 150, width = 200,style="float:left;"),
                                    h3("Shubham  Periwal"),
-                                   p("Our team's objective is to analyse and determine how these facilities such as transportation, 
-                                     school and healthcare services would impact the accessibility level around HDB.")
-                                   )
+                                   p("Junior year Analytics student in School of Information Systems. Still thinks Python > R."))
                                ),
                              br(),
                              br(),
@@ -229,7 +228,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                              tags$hr(),
                              withTags(
                                div(class = "team_member2",
-                                   img(src = "raynie.jpg", height = 150, width = 200,style="float:left;"),
+                                   img(src = "Kaelyn.jpg", height = 150, width = 200,style="float:left;"),
                                    h3("Zhou Yunying(Kaelyn)"),
                                    p("Our team's objective is to analyse and determine how these facilities such as transportation, 
                                       school and healthcare services would impact the accessibility level around HDB.")
@@ -242,7 +241,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                              tags$hr(align="left"),
                              withTags(
                                div(class = "team_member3",
-                                   img(src = "raynie.jpg", height = 150, width = 200,style="float:left;"),
+                                   img(src = "Raynie.jpg", height = 150, width = 200,style="float:left;"),
                                    h3(" Raynie Moo Wee Lim"),
                                    p("Year 4 graduating student majoring in Information Systems and Organisational Behaviour and Human Resources.")
                                )
@@ -347,7 +346,9 @@ server <- function(input, output) {
           tm_shape(mpsz) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
           tm_shape(mpsz) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
           tm_shape(houses_sf) +
-          tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette)
+          tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,
+                  popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                               "AHP Score" = "ahp"))
           
       }else{
         if(input$type == "Region"){#AHP Region
@@ -356,7 +357,9 @@ server <- function(input, output) {
             tm_shape(mpr[mpr$Name==input$region, ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
             tm_shape(mpr[mpr$Name==input$region, ]) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
             tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) +
-            tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette)
+            tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,
+                    popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                                 "AHP Score" = "ahp"))
           
         }else if(input$type =="Subzone"){#AHP Subzone
           mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
@@ -366,7 +369,9 @@ server <- function(input, output) {
             tm_shape(mpsz[mpsz$SUBZONE_N==input$userinput, ]) +
               tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
             tm_shape(houses_sf[houses_sf$SUBZONE_N==input$userinput, ]) +
-              tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette)
+              tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,
+                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                                   "AHP Score" = "ahp"))
           
         }else if(input$type == "Planning Area"){#AHP Planning
           
@@ -377,7 +382,9 @@ server <- function(input, output) {
             tm_shape(mpa[mpa$Name==input$userinput, ]) + 
               tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
             tm_shape(houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]) +
-             tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette)
+             tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,
+                     popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                                  "AHP Score" = "ahp"))
         }else{
           
         }
@@ -395,7 +402,9 @@ server <- function(input, output) {
           tm_shape(houses_sf) + 
           tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
                   style='fixed', breaks =breaks_fac, size=0.05,
-                  palette = colour_palette) +
+                  palette = colour_palette,
+                  popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                               "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse='')))+
           tm_shape(fac_sf) + 
           tm_symbols(shape=2, size = 0.3, alpha = .5, border.col='black', col='white', scale=4/3) 
         
@@ -413,7 +422,9 @@ server <- function(input, output) {
               tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) + 
               tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
                       style='fixed', breaks =breaks_fac, size=0.05,
-                      palette = colour_palette) +
+                      palette = colour_palette,
+                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                                   "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse='')))+
               tm_shape(fac_sf[fac_sf$REGION_N==input$region, ]) + 
               tm_dots(size = .1, alpha = .5, shape = facility_icon_vector[input$test][[1]]) 
             
@@ -427,7 +438,9 @@ server <- function(input, output) {
               tm_shape(houses_sf[houses_sf$SUBZONE_N==input$userinput, ]) + 
               tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
                       style='fixed', breaks =breaks_fac, size=0.05,
-                      palette = colour_palette) +
+                      palette = colour_palette,
+                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                                   "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
               tm_shape(fac_sf[fac_sf$SUBZONE_N==input$userinput, ])  + 
               tm_dots(size = .3, alpha = .5,shape = facility_icon_vector[input$test][[1]]) 
             
@@ -600,7 +613,7 @@ server <- function(input, output) {
                          legend.title = element_blank(),
                          legend.position = "none") +
                    labs(x = "Subzone", y = "Mean distance"))+
-                scale_fill_manual(values = c('orange','#336e7b'))
+                scale_fill_manual(values = c('#336e7b','orange'))
           }
         }
       }

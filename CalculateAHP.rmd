@@ -52,7 +52,9 @@ ahp_mat <- transpose %>% ahp.mat(df = transpose, atts = features, negconvert = T
 priorities <- ahp.indpref(ahp_mat, features)
 
 priorities$busStop
-```
+
+priorities
+  ```
 
 ```{r}
 houses_sf$ahp<- 
