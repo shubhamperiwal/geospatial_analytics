@@ -22,6 +22,7 @@ mpr_sf <- st_as_sf(mpr)
 mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
 mpsz_sf <- st_as_sf(mpsz)
 
+unique(mpsz$REGION_N)
 houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
 houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
 

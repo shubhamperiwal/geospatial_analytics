@@ -14,7 +14,7 @@ for (p in packages){
 
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-houses <- read_csv('data/resale-flat-prices/all_flats_updated.csv')
+houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
 houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
 houses_sf <- st_set_crs(houses_sf, 4326)
 houses_sf <- st_transform(houses_sf, 3414)
@@ -22,17 +22,17 @@ houses_sf <- st_transform(houses_sf, 3414)
 
 
 ```{r}
-gpclinics <- read_csv('data/clinics/gpclinics.csv')
-clinics_sf <- st_as_sf(gpclinics, coords = c("lon", "lat"))
+clinics <- read_csv('data/clinics/clinics.csv')
+clinics_sf <- st_as_sf(clinics, coords = c("lon", "lat"))
 clinics_sf <- st_set_crs(clinics_sf, 4326)
 clinics_sf <- st_transform(clinics_sf, 3414)
-clinics
 ```
 
 ```{r}
-clinics_buffer <- st_buffer(houses_sf, 1000)
+clinics_buffer <- st_buffer(houses_sf, 500)
 clinics_in_range <- st_intersection(clinics_buffer, clinics_sf)
 
+length(unique(clinics_in_range$X1))
 clinics_coords <- as.data.frame(st_coordinates(clinics_in_range))
 clinics_in_range$clinic_x <- clinics_coords$X
 clinics_in_range$clinic_y <- clinics_coords$Y
