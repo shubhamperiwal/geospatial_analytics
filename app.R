@@ -646,12 +646,14 @@ server <- function(input, output) {
   ### Map of our Data Plot###
   output$allPlot <-  renderLeaflet({
     facilities_map <- houses_sf 
+    shape_icon <- 22
     if(input$radio %in% facilities){
       facilities_map <- facility_sf_vector[input$radio][[1]]
+      shape_icon <- facility_icon_vector[input$radio][[1]]
     }
     mydata <- tm_shape(mpsz) + tm_polygons() + 
       tm_shape(facilities_map) + 
-      tm_dots(size = 0.01, col = "#7d4627") + 
+      tm_dots(size = 0.1, col = "#7d4627", shape = shape_icon) + 
       tm_style("classic", bg.color="white") +
       tm_view(alpha = 1, basemaps = "Stamen.Watercolor")
     
