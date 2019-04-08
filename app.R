@@ -655,7 +655,7 @@ server <- function(input, output) {
                  coord_flip() +
                  theme_dotplot +
                  ylab("Mean for Minimum Distance") +
-                 xlab("Region for HDB Units"))
+                 xlab("Planning Area for HDB Units"))
         }else if(input$test == "spf"){
           plot(ggplot(min_spf2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
                  geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
@@ -664,7 +664,7 @@ server <- function(input, output) {
                  coord_flip() +
                  theme_dotplot +
                  ylab("Mean for Minimum Distance") +
-                 xlab("Region for HDB Units"))
+                 xlab("Planning Area for HDB Units"))
         }else if(input$test == "clinics"){
           plot(ggplot(min_clinic2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
                  geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
@@ -673,7 +673,7 @@ server <- function(input, output) {
                  coord_flip() +
                  theme_dotplot +
                  ylab("Mean for Minimum Distance") +
-                 xlab("Region for HDB Units"))
+                 xlab("Planning Area for HDB Units"))
         }else if(input$test == "mrt"){
           plot(ggplot(min_mrt2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
                  geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
@@ -682,7 +682,7 @@ server <- function(input, output) {
                  coord_flip() +
                  theme_dotplot +
                  ylab("Mean for Minimum Distance") +
-                 xlab("Region for HDB Units"))
+                 xlab("Planning Area for HDB Units"))
         }else if(input$test == "schools"){
           plot(ggplot(min_school2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
                  geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
@@ -691,7 +691,7 @@ server <- function(input, output) {
                  coord_flip() +
                  theme_dotplot +
                  ylab("Mean for Minimum Distance") +
-                 xlab("Region for HDB Units"))
+                 xlab("Planning Area for HDB Units"))
         }else if(input$test == "hawkers"){
           plot(ggplot(min_hawker2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
                  geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
@@ -700,7 +700,7 @@ server <- function(input, output) {
                  coord_flip() +
                  theme_dotplot +
                  ylab("Mean for Minimum Distance") +
-                 xlab("Region for HDB Units"))
+                 xlab("Planning Area for HDB Units"))
         }
       }
     }else{
@@ -728,7 +728,7 @@ server <- function(input, output) {
                  coord_flip() +
                  theme_dotplot +
                  ylab("Mean for Minimum Distance") +
-                 xlab("Region for HDB Units"))
+                 xlab("Planning Area for HDB Units"))
         }else{
           if(!is.null(input$userinput)){
             ggplot(houses_agg,aes(x = reorder(PLN_AREA_N, -mean_dist), y=mean_dist)) +
