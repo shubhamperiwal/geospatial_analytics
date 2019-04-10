@@ -17,8 +17,13 @@ for (p in packages){
 
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
-houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
+houses_sf<- st_as_sf(houses, coords = c("lon", "lat"))
 
+min_school <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_school),
+                                                              max_dist = max(min_dist_school),
+                                                              min_dist = min(min_dist_school))
+
+houses_box <- houses_sf[c(1:5),]
 mpsz <- readOGR(dsn='data/mpsz', layer='MP14_SUBZONE_WEB_PL')
 
 schools <- read_csv('data/schools/schools.csv' )

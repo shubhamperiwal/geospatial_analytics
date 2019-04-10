@@ -112,13 +112,13 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                fluidRow(
                                  selectInput("region", 
                                              label = "Select Region:",
-                                             choices = list("WHOLE SINGAPORE",
+                                             choices = list("EAST REGION",
                                                             "NORTH REGION", 
                                                             "CENTRAL REGION",
                                                             "NORTH-EAST REGION", 
                                                             "WEST REGION",
-                                                            "EAST REGION"),
-                                             selected = "WHOLE SINGAPORE")
+                                                            "WHOLE SINGAPORE"),
+                                             selected = "EAST REGION")
                                ),
                                br(),
                                fluidRow(
@@ -154,7 +154,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                                  column(6,
                                         conditionalPanel(
                                           condition = "input.test !='all'",
-                                          h3("Lollipop Plot"),
+                                          h3("Boxplot by Planning Area"),
                                           plotOutput("planning_area_barchart", height = 350, width = "100%"))
                                  ),
                                  column(6,
@@ -508,242 +508,60 @@ server <- function(input, output) {
     tmap_leaflet(mydata)
   })
   
-  # ### For Barchart ###
+  # ### For SUBZONE Boxplot ###
   output$sz_barchart <-  renderPlot({
-    min_clinic <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_clinic))
-    min_clinic <- min_clinic[order(min_clinic$mean_dist),][c(1:input$upperLimit),]
-    min_hawker <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_hawker))
-    min_hawker <- min_hawker[order(min_hawker$mean_dist),][c(1:input$upperLimit),]
-    min_mrt <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_mrt))
-    min_mrt <- min_mrt[order(min_mrt$mean_dist),][c(1:input$upperLimit),]
-    min_spf <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_spf))
-    min_spf <- min_spf[order(min_spf$mean_dist),][c(1:input$upperLimit),]
-    min_school <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_preschool))
-    min_school <- min_school[order(min_school$mean_dist),][c(1:input$upperLimit),]
-    min_busStop <- houses_sf %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_busStop))
-    min_busStop <- min_busStop[order(min_busStop$mean_dist),][c(1:input$upperLimit),]
+   
+    houses_box_sg <- houses_sf %>% rename('distance' = paste(unlist(facility_dist_vector[input$test]), collapse=''))
+    
+    #WHOLE SINGAPORE
     if(input$region == "WHOLE SINGAPORE"){
-      if(input$test == "all"){
-        
-      }else{
-        if(input$test == "busStop"){
-          plot(ggplot(min_busStop, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("#336e7b"))) +
-                 geom_col() +
-                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                       legend.title = element_blank(),
-                       legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))+
-            scale_fill_manual(values = c('#336e7b'))
-        }else if(input$test == "spf"){
-          plot(ggplot(min_spf, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("#336e7b"))) +
-                 geom_col() +
-                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                       legend.title = element_blank(),
-                       legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))+
-            scale_fill_manual(values = c('#336e7b'))
-        }else if(input$test == "clinics"){
-          plot(ggplot(min_clinic, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("#336e7b"))) +
-                 geom_col() +
-                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                       legend.title = element_blank(),
-                       legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))+
-            scale_fill_manual(values = c('#336e7b'))
-        }else if(input$test == "mrt"){
-          plot(ggplot(min_mrt, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("#336e7b"))) +
-                 geom_col() +
-                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                       legend.title = element_blank(),
-                       legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))+
-            scale_fill_manual(values = c('#336e7b'))
-        }else if(input$test == "schools"){
-          plot(ggplot(min_school, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("#336e7b"))) +
-                 geom_col() +
-                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                       legend.title = element_blank(),
-                       legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))+
-            scale_fill_manual(values = c('#336e7b'))
-        }else if(input$test == "hawkers"){
-          plot(ggplot(min_hawker, aes(x= reorder(SUBZONE_N, mean_dist), mean_dist,fill=("#336e7b"))) +
-                 geom_col() +
-                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                       legend.title = element_blank(),
-                       legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))+
-            scale_fill_manual(values = c('#336e7b'))
-        }
+      if(input$test != "all"){
+          plot(ggplot(houses_box_sg, aes(x= SUBZONE_N, y= distance))+
+                 geom_boxplot( fill=c('#336e7b')) +
+                 labs(x = "Subzone", y = "Distance"))
       }
     }else{
-      if(input$test == "all"){
-        
-      }else{
-        if(input$test == "busStop"){
-          houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_busStop))
-        }else if(input$test == "spf"){
-          houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_spf))
-        }else if(input$test == "clinics"){
-          houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_clinic))
-        }else if(input$test == "mrt"){
-          houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_mrt))
-        }else if(input$test == "schools"){
-          houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_school))
-        }else if(input$test == "hawkers"){
-          houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(SUBZONE_N) %>% summarise(mean_dist=mean(min_dist_hawker))
-        }
-        houses_agg <- houses_agg[order(houses_agg$mean_dist),][c(1:input$upperLimit),]
-        
-        if(input$type =="Region"){
-          plot(ggplot(houses_agg, aes(x = reorder(SUBZONE_N, mean_dist),y = mean_dist,
-                                      fill=("#336e7b"))) + 
-                 geom_col() + 
+      
+      #SELECTED REGION
+      if(input$test != "all"){
+        houses_sf_region <- houses_sf[houses_sf$REGION_N==input$region, ]
+        houses_box_region <- houses_sf_region %>% rename('distance' = paste(unlist(facility_dist_vector[input$test]), collapse=''))
+          plot(ggplot(houses_box_region, aes(x = SUBZONE_N, y=distance)) + 
+                 geom_boxplot( fill=c('#336e7b')) + 
                  theme(axis.text.x = element_text(angle = 90, hjust = 1),
                        legend.title = element_blank(),
                        legend.position = "none") +
-                 labs(x = "Subzone", y = "Mean distance"))+
-            scale_fill_manual(values = c('#336e7b'))
-        }else{
-          if(is.null(input$userinput)){
-            plot(ggplot(houses_agg, aes(x = reorder(SUBZONE_N, mean_dist),y = mean_dist,
-                                        fill=("#336e7b"))) + 
-                   geom_col() + 
-                   theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                         legend.title = element_blank(),
-                         legend.position = "none") +
-                   labs(x = "Subzone", y = "Mean distance")) +
-              scale_fill_manual(values = c('#336e7b'))
-            }else{
-            plot(ggplot(houses_agg, aes(x = reorder(SUBZONE_N, mean_dist),y = mean_dist,
-                                        fill=ifelse(SUBZONE_N==input$userinput,"highlight","normal"))) + 
-                   geom_col() + 
-                   theme(axis.text.x = element_text(angle = 90, hjust = 1),
-                         legend.title = element_blank(),
-                         legend.position = "none") +
-                   labs(x = "Subzone", y = "Mean of minimum distance"))+
-                scale_fill_manual(values = c('orange','#336e7b'))
-          }
+                 labs(x = "Subzone", y = "Distance"))
         }
       }
-    }
   })
   
-  # ### For Barchart ###
+  # ### For Planning area Boxplot on top right ###
   output$planning_area_barchart <-  renderPlot({
-    min_clinic2 <- houses_sf %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_clinic))
-    min_clinic2 <- min_clinic2[order(min_clinic2$mean_dist),][c(1:input$upperLimit),]
-    min_hawker2 <- houses_sf %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_hawker))
-    min_hawker2 <- min_hawker2[order(min_hawker2$mean_dist),][c(1:input$upperLimit),]
-    min_mrt2 <- houses_sf %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_mrt))
-    min_mrt2 <- min_mrt2[order(min_mrt2$mean_dist),][c(1:input$upperLimit),]
-    min_spf2 <- houses_sf %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_spf))
-    min_spf2 <- min_spf2[order(min_spf2$mean_dist),][c(1:input$upperLimit),]
-    min_school2 <- houses_sf %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_preschool))
-    min_school2 <- min_school2[order(min_school2$mean_dist),][c(1:input$upperLimit),]
-    min_busStop2 <- houses_sf %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_busStop))
-    min_busStop2 <- min_busStop2[order(min_busStop2$mean_dist),][c(1:input$upperLimit),]
+    houses_box_sg <- houses_sf %>% rename('distance' = paste(unlist(facility_dist_vector[input$test]), collapse=''))
     
     if(input$region == "WHOLE SINGAPORE"){
-      if(input$test == "all"){
-      }else{
-        if(input$test == "busStop"){
-          plot(ggplot(min_busStop2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
-                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
-                 geom_point( color="#336e7b", size=5, alpha=1) +
-                 
-                 coord_flip() +
-                 theme_dotplot +
-                 ylab("Mean for Minimum Distance") +
-                 xlab("Planning Area for HDB Units"))
-        }else if(input$test == "spf"){
-          plot(ggplot(min_spf2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
-                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
-                 geom_point( color="#336e7b", size=5, alpha=1) +
-                 
-                 coord_flip() +
-                 theme_dotplot +
-                 ylab("Mean for Minimum Distance") +
-                 xlab("Planning Area for HDB Units"))
-        }else if(input$test == "clinics"){
-          plot(ggplot(min_clinic2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
-                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
-                 geom_point( color="#336e7b", size=5, alpha=1) +
-                 
-                 coord_flip() +
-                 theme_dotplot +
-                 ylab("Mean for Minimum Distance") +
-                 xlab("Planning Area for HDB Units"))
-        }else if(input$test == "mrt"){
-          plot(ggplot(min_mrt2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
-                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
-                 geom_point( color="#336e7b", size=5, alpha=1) +
-                 
-                 coord_flip() +
-                 theme_dotplot +
-                 ylab("Mean for Minimum Distance") +
-                 xlab("Planning Area for HDB Units"))
-        }else if(input$test == "schools"){
-          plot(ggplot(min_school2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
-                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
-                 geom_point( color="#336e7b", size=5, alpha=1) +
-                 
-                 coord_flip() +
-                 theme_dotplot +
-                 ylab("Mean for Minimum Distance") +
-                 xlab("Planning Area for HDB Units"))
-        }else if(input$test == "hawkers"){
-          plot(ggplot(min_hawker2,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
-                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), color="#535c68", size=2, alpha=0.7,face="bold") +
-                 geom_point( color="#336e7b", size=5, alpha=1) +
-                 
-                 coord_flip() +
-                 theme_dotplot +
-                 ylab("Mean for Minimum Distance") +
-                 xlab("Planning Area for HDB Units"))
-        }
+      if(input$test != "all"){
+        plot(ggplot(houses_box_sg, aes(x = PLN_AREA_N, y=distance)) + 
+               geom_boxplot( fill=c('#336e7b')) + 
+               labs(x = "Planning Area", y = "Distance")+
+               scale_fill_manual(values = c('#336e7b')))
       }
     }else{
-      if(input$test == "all"){
-      }else{
-        if(input$test == "busStop"){
-          houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_busStop))
-        }else if(input$test == "spf"){
-          houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_spf))
-        }else if(input$test == "clinics"){
-          houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_clinic))
-        }else if(input$test == "mrt"){
-          houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_mrt))
-        }else if(input$test == "schools"){
-          houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_school))
-        }else if(input$test == "hawkers"){
-          houses_agg <- houses_sf[houses_sf$REGION_N==input$region, ] %>% group_by(PLN_AREA_N) %>% summarise(mean_dist=mean(min_dist_hawker))
-        }
-        if(input$type =="Region" || input$type == "Subzone"){
-          plot(ggplot(houses_agg,aes(x = reorder(PLN_AREA_N, mean_dist), y=mean_dist)) +
-                 geom_segment( aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), 
-                               color="#535c68", size=2, alpha=0.7,face="bold") +
-                 geom_point( color="#336e7b", size=5, alpha=1) +
-                 
-                 coord_flip() +
-                 theme_dotplot +
-                 ylab("Mean for Minimum Distance") +
-                 xlab("Planning Area for HDB Units"))
-        }else{
-          if(!is.null(input$userinput)){
-            ggplot(houses_agg,aes(x = reorder(PLN_AREA_N, -mean_dist), y=mean_dist)) +
-              geom_segment(aes(x=reorder(PLN_AREA_N, -mean_dist), xend=PLN_AREA_N, y=0, yend=mean_dist), 
-                           color=ifelse(houses_agg$PLN_AREA_N==input$userinput,"orange", "#535c68"), 
-                           size=ifelse(houses_agg$PLN_AREA_N==input$userinput,3, 2), alpha=0.7,face="bold") +
-              geom_point(color=ifelse(houses_agg$PLN_AREA_N==input$userinput,"orange","#336e7b"), size=5, 
-                         alpha=1) +
-              coord_flip() +
-              theme_dotplot +
-              ylab("Mean of Minimum Distance") +
-              xlab("Planning Areas")
-          }
-        }
+      
+      houses_sf_region <- houses_sf[houses_sf$REGION_N==input$region, ]
+      houses_box_region <- houses_sf_region %>% rename('distance' = paste(unlist(facility_dist_vector[input$test]), collapse=''))
+      
+      if(input$test != "all"){
         
+          plot(ggplot(houses_box_region, aes(x = PLN_AREA_N, y=distance)) + 
+                 geom_boxplot( fill=c('#336e7b')) + 
+                 coord_flip() +
+                 theme(axis.text.x = element_text(angle = 90, hjust = 1),
+                       legend.title = element_blank(),
+                       legend.position = "none") +
+                 labs(x = "Planning Area", y = "Distance")+
+                 scale_fill_manual(values = c('#336e7b')))
       }
     }
   })
