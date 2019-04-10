@@ -20,20 +20,20 @@ houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
 #Try ahp.mat
 features <- c('busStop', 'clinics','hawkers','mrt','schools','spf')
 weight_b_c <- 9  #Weight busstop_clinic. Bus stop is much higher priority than clinic
-weight_b_h <- 7
-weight_b_m <- 5
-weight_b_sc <- 3
-weight_b_sp <- 1
-weight_c_h <- -3
-weight_c_m <- -4
-weight_c_sc <- -7
-weight_c_sp <- -9
-weight_h_m <- -3
-weight_h_sc <- -5
-weight_h_sp <- -6
-weight_m_sc <- -7
-weight_m_sp <- -9
-weight_sc_sp <- -3
+weight_b_h <- 9
+weight_b_m <- 9
+weight_b_sc <- 9
+weight_b_sp <- 9
+weight_c_h <- 9
+weight_c_m <- 9
+weight_c_sc <- 9
+weight_c_sp <- 9
+weight_h_m <- 9
+weight_h_sc <-9
+weight_h_sp <- 9
+weight_m_sc <- 9
+weight_m_sp <- 9
+weight_sc_sp <- 9
 
 df <- data.frame(c(weight_b_c, weight_b_h, weight_b_m, weight_b_sc, weight_b_sp,
                    weight_c_h, weight_c_m, weight_c_sc, weight_c_sp, 
@@ -48,13 +48,18 @@ colnames(transpose) <- c("b_c", "b_h", "b_m", "b_sc", "b_sp",
                          "sc_sp")
 rownames(transpose) <- "row"
 
-ahp_mat <- transpose %>% ahp.mat(df = transpose, atts = features, negconvert = T) %>% head(3)
+# ahp_mat <- transpose %>% ahp.mat(df = transpose, atts = features, negconvert = T) %>% head(3)
+# priorities <- ahp.indpref(ahp_mat, features)
+# 
+# ahp_mat
+# priorities$busStop
+# 
+# priorities
+
+ahp_mat <- ahp.mat(df = transpose, atts = features, negconvert = T)
 priorities <- ahp.indpref(ahp_mat, features)
-
-priorities$busStop
-
-priorities
-  ```
+consistency <- ahp.cr(ahp_mat, atts=features)
+```
 
 ```{r}
 houses_sf$ahp<- 
