@@ -1,14 +1,14 @@
 source('global.R', local = TRUE)
 
 # Define UI ----
-ui <- fluidPage(theme = shinytheme("cosmo"),
+ui <- fluidPage(theme = shinytheme("flatly"),
                 navbarPage(
                   title=("XccessPoint"),
                   tabPanel(" Info",
                            withTags(
                              div(class = "Issue_problem",
                                  style = "width: 50%; margin-top:-35px;",
-                                 img(src = "XccessPoint_Logo.png", height = 350, width = 600,style="position:fixed;top: 500;right: 0;"),
+                                 img(src = "finallogowhite.png", height = 450, width = 450,style="position:fixed;top: 500;right:0;"),
                                  h3("Issues and Problem"),
                                  p("Our team's objective is to analyse and determine how these facilities such as transportation, 
                                    school and healthcare services would impact the accessibility level around HDB.")
@@ -224,10 +224,11 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                               withTags(
                                 div(class = "team_member3",
                                     img(src = "Raynie.jpg", height = 150, width = 200,style="float:left;"),
-                                    h3(" Raynie Moo Wee Lim"),
-                                    p("Year 4 graduating student majoring in Information Systems and Organisational Behaviour and Human Resources.")
-                                )
+                                    h3(style="margin-left: 210px;"," Raynie Moo Wee Lim"),
+                                    p(style="margin-left: 210px;","Year 4 graduating student majoring in Information Systems and Organisational Behaviour and Human Resources."),
+                                    p(style="margin-left: 210px;","Enjoys taking videos."))
                               )
+                              
                              ,
                              br(),
                              br(),
@@ -236,12 +237,12 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                              br(),
                              tags$hr(),
                              withTags(
-                               div(class = "team_member1",
-                                   img(src = "Shubham.jpg", height = 150, width = 200,style="float:left;"),
-                                   h3("Shubham  Periwal"),
-                                   p("Junior year Analytics student in School of Information Systems. "),
-                                   p("Still thinks Python > R."))
-                             ),
+                             div(class = "team_member1",
+                                 img(src = "Shubham.jpg", height = 150, width = 200,style="float:left;"),
+                                 h3(style="margin-left: 210px;","Shubham  Periwal"),
+                                 p(style="margin-left: 210px;","Junior year Analytics student in School of Information Systems. "),
+                                 p(style="margin-left: 210px;","Still thinks Python > R."))
+                             ),                   
                              br(),
                              br(),
                              br(),
@@ -250,9 +251,9 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                              withTags(
                                div(class = "team_member2",
                                    img(src = "Kaelyn.jpg", height = 150, width = 200,style="float:left;"),
-                                   h3("Zhuo Yunying(Kaelyn)"),
-                                   p("Junior student studying Lee Kong Chain School of Business and currently double majoring in Operations Management and Analytics."),
-                                   p("She lives and breathes data analytics.")
+                                   h3("Zhuo Yunying(Kaelyn)",style="margin-left: 210px;"),
+                                   p(style="margin-left: 210px;","Junior student studying Lee Kong Chain School of Business and currently double majoring in Operations Management and Analytics."),
+                                   p(style="margin-left: 210px;","She lives and breathes data analytics.")
                                )
                              )
                              )))
@@ -355,7 +356,7 @@ server <- function(input, output) {
           tm_shape(mpsz) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
           tm_shape(mpsz) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
           tm_shape(houses_sf) +
-          tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,
+          tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
                   popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                "AHP Score" = "ahp"))
           
@@ -366,7 +367,7 @@ server <- function(input, output) {
             tm_shape(mpr[mpr$Name==input$region, ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
             tm_shape(mpr[mpr$Name==input$region, ]) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
             tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) +
-            tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,
+            tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
                     popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                  "AHP Score" = "ahp"))
           
@@ -378,7 +379,7 @@ server <- function(input, output) {
             tm_shape(mpsz[mpsz$SUBZONE_N==input$userinput, ]) +
               tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
             tm_shape(houses_sf[houses_sf$SUBZONE_N==input$userinput, ]) +
-              tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,
+              tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
                       popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                    "AHP Score" = "ahp"))
           
@@ -391,7 +392,7 @@ server <- function(input, output) {
             tm_shape(mpa[mpa$Name==input$userinput, ]) + 
               tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
             tm_shape(houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]) +
-             tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,
+             tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                   "AHP Score" = "ahp"))
         }else{
@@ -412,7 +413,7 @@ server <- function(input, output) {
           tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
                   style='fixed', breaks =breaks_fac, size=0.05,
                   palette = colour_palette,
-                  popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                  popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",title = "Min Distance to Facility",
                                "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse='')))+
           tm_shape(fac_sf) + 
           tm_symbols(shape=2, size = 0.3, alpha = .5, border.col='black', col='white', scale=4/3) 
@@ -432,7 +433,7 @@ server <- function(input, output) {
               tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
                       style='fixed', breaks =breaks_fac, size=0.05,
                       palette = colour_palette,
-                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",title = "Min Distance to Facility",
                                    "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse='')))+
               tm_shape(fac_sf[fac_sf$REGION_N==input$region, ]) + 
               tm_dots(size = .1, alpha = .5, shape = facility_icon_vector[input$test][[1]]) 
@@ -448,7 +449,7 @@ server <- function(input, output) {
               tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
                       style='fixed', breaks =breaks_fac, size=0.05,
                       palette = colour_palette,
-                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",title = "Min Distance to Facility",
                                    "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
               tm_shape(fac_sf[fac_sf$SUBZONE_N==input$userinput, ])  + 
               tm_dots(size = .3, alpha = .5,shape = facility_icon_vector[input$test][[1]]) 
@@ -466,7 +467,7 @@ server <- function(input, output) {
               tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
                       style='fixed', breaks = breaks_fac, size=0.05,
                       palette = colour_palette,
-                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",title = "Min Distance to Facility",
                                    "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
               tm_shape(fac_sf[fac_sf$REGION_N==input$region, ]) + 
               tm_dots(size = .1, alpha = .5, shape = facility_icon_vector[input$test][[1]]) 
@@ -481,7 +482,7 @@ server <- function(input, output) {
               tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
                       style='fixed', breaks =breaks_fac, size=0.05,
                       palette = colour_palette,
-                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",title = "Min Distance to Facility",
                                    "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
               tm_shape(fac_sf[fac_sf$PLN_AREA_N==input$userinput, ])  + 
               tm_dots(size = .3, alpha = .5,shape = facility_icon_vector[input$test][[1]]) 
@@ -497,7 +498,7 @@ server <- function(input, output) {
             tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''),
                     style='fixed', breaks = breaks_fac, size=0.05,
                     palette = colour_palette,
-                    popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                    popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",title = "Min Distance to Facility",
                                  "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
             tm_shape(fac_sf[fac_sf$REGION_N==input$region, ]) + 
             tm_dots(size = .1, alpha = .5, shape = facility_icon_vector[input$test][[1]]) 
@@ -572,8 +573,8 @@ server <- function(input, output) {
     if(input$radio %in% facilities){
       facilities_map <- facility_sf_vector[input$radio][[1]]
     }
-    mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
-      tm_basemap(server = NA, group = "Clear", alpha = 1) +
+    mydata <- tm_basemap(server = NA, group = "Clear", alpha = 1) +
+      tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
       tm_shape(mpsz) + tm_polygons(alpha=0, border.col = '#2f3542', lwd = 1) + 
       tm_shape(facilities_map) + 
       tm_dots(size = 0.03, col = '#82ccdd', border.col='black')
@@ -593,11 +594,11 @@ server <- function(input, output) {
     mpsz_count <- left_join(mpsz_data, facilities_agg)
     mpsz_count$count[is.na(mpsz_count$count)] <- 0
     mpsz@data <- mpsz_count
-    mydata <-tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
-      tm_basemap(server = NA, group = "Clear", alpha = 1) +
+    mydata <- tm_basemap(server = NA, group = "Clear", alpha = 1) +
+      tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
       tm_shape(mpsz) +
       tm_fill("count", style = "jenks", palette = 'GnBu', 
-              title = "Count in each subzone") +
+              title = "Count in Each Subzone") +
       tm_layout(legend.show = FALSE,title.position = c("center", "center"),
                 title.size = 20) +
       tm_borders(lty = "dashed",col = '#192a56',lwd = 1)
@@ -605,6 +606,31 @@ server <- function(input, output) {
     tmap_leaflet(mydata)
   })
   
+  ###Synchronise Data Plot and Chrolopleth Map 
+  observe({
+    coords1 <- input$allPlot_bounds
+    
+    if(!is.null(coords1)){
+      tproxy <- leafletProxy("cmap") %>%
+        fitBounds(coords1$west,
+                  coords1$south,
+                  coords1$east,
+                  coords1$north)
+    }
+  })
+  
+  ###Synchronise Data Plot and Chrolopleth Map 
+  observe({
+    coords2 <- input$cmap_bounds
+    
+    if(!is.null(coords2)){
+      tproxy <- leafletProxy("allPlot") %>%
+        fitBounds(coords2$west,
+                  coords2$south,
+                  coords2$east,
+                  coords2$north)
+    }
+  })
   
   ### Data table for Initial Plot###
   output$table <- DT::renderDataTable({
