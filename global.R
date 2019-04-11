@@ -1,5 +1,5 @@
 #Loading library packages
-packages = c('shiny','leaflet','ahp','ahpsurvey','markdown','httr','raster', 'rgdal', 'sf', 'sp', 'ClustGeo', 'spdep','tmap','readr','ggmap','spatstat','qdapTools','tidyverse','ggplot2','DT', 'shinythemes')
+packages = c('shiny','leaflet','ahpsurvey', 'rgdal', 'sf', 'sp', 'spdep','tmap','readr','ggmap','spatstat','qdapTools','tidyverse','ggplot2','DT', 'shinythemes')
 for (p in packages){ 
   if(!require(p, character.only = T)){
     install.packages(p) 

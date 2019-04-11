@@ -8,7 +8,7 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                            withTags(
                              div(class = "Issue_problem",
                                  style = "width: 50%; margin-top:-35px;",
-                                 img(src = "finallogowhite.png", height = 450, width = 450,style="position:fixed;top: 500;right:0;"),
+                                 img(src = "finalogowhite.png", height = 450, width = 450,style="position:fixed;top: 500;right:0;"),
                                  h3("Issues and Problem"),
                                  p("Our team's objective is to analyse and determine how these facilities such as transportation, 
                                    school and healthcare services would impact the accessibility level around HDB.")
@@ -60,28 +60,26 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                            sidebarLayout(
                              sidebarPanel(  
                                fluidRow(
-                                 h3("Filter your output")
+                                 h3("Facilities available")
                                ),
                                br(),
                                fluidRow(
                                  column(10,
                                         radioButtons("radio", label = "Select Facility to plot:",
                                                      choices = list(
-                                                       "Houses" = "houses",
+                                                       "Clinic"= "clinics",
                                                        "Bus Stop" = "busStop",
-                                                        "Clinic"= "clinics",
                                                         "MRT-Station" = "mrt",
                                                         "Hawker" = "hawkers",
                                                         "Schools" = "schools",
-                                                        "Singapore Police Force" = "spf"),
-                                                     selected = "houses"))
+                                                        "Singapore Police Force" = "spf",
+                                                       "Houses" = "houses"),
+                                                     selected = "clinics"))
                                ),width=3),
                              mainPanel(
                                fluidRow(
-                                 column(10,h3("Facilities Spatial Distribution and Chrolopleth Map"))
-                               ),
-                               fluidRow(
-                                 column(10,h4("Select facility to plot it's location and quantity per subzone"))
+                                 column(6,h3("Facilities Spatial Distribution Chrolopleth Map")),
+                                 column(6,h3("Chrolopleth Map"))
                                ),
                                fluidRow(
                                  column(6,leafletOutput("allPlot", height = 500, width = "100%")),
@@ -94,19 +92,19 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                            sidebarLayout(
                              sidebarPanel(  
                                fluidRow(
-                                 h3("Filter your output")
+                                 h3("Facilities available")
                                ),
                                br(),
                                fluidRow(
                                  selectInput("test", label="Select Facility Type:",
-                                             choices = list("AHP" = "all", 
+                                             choices = list("Clinic"= "clinics",
                                                             "Bus Stop" = "busStop",
-                                                            "Clinic"= "clinics",
                                                             "MRT-Station" = "mrt",
                                                             "Hawker" = "hawkers",
                                                             "Schools" = "schools",
-                                                            "Singapore Police Force" = "spf"),
-                                             selected = "all")
+                                                            "Singapore Police Force" = "spf",
+                                                            "AHP" = "all"),
+                                             selected = "clinics")
                                ),
                                br(),
                                fluidRow(
@@ -136,15 +134,20 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                                    selectInput("type", 
                                                label = "View by",
                                                choices = list("Region",
-                                                              "Subzone",
                                                               "Planning Area"),
                                                selected= "Region"))
                                ),
                                br(),
                                fluidRow(
                                  conditionalPanel(
-                                   condition = "input.region != 'WHOLE SINGAPORE'",
+                                   condition = "input.region != 'WHOLE SINGAPORE' && input.type == 'Planning Area'",
                                    uiOutput("cc")
+                                 )
+                               ),
+                               fluidRow(
+                                 conditionalPanel(
+                                   condition = "input.region != 'WHOLE SINGAPORE' && input.type == 'Planning Area'",
+                                   uiOutput("subzone")
                                  )
                                )
                                ,width=2),
@@ -168,8 +171,8 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                                  column(12,
                                         conditionalPanel(
                                           condition = "input.test !='all'",
-                                          h3("Bar Chart of Subzones"),
-                                          plotOutput("sz_barchart", height = 350, width = "100%"))
+                                          h3("Boxplot of Subzones"),
+                                          plotOutput("sz_boxplot", height = 350, width = "100%"))
                                  ),
                                  column(6,
                                         conditionalPanel(
@@ -199,7 +202,7 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                            sidebarLayout(
                              sidebarPanel(
                                fluidRow(
-                                 h3("Filter your output")
+                                 h3("Facilities available")
                                ),
                                br(),
                                fluidRow(
@@ -261,12 +264,19 @@ ui <- fluidPage(theme = shinytheme("flatly"),
 server <- function(input, output) {
   
   output$cc <- renderUI({
-    if(input$type == "Subzone"){
-      c <- houses_sf[houses_sf$REGION_N==input$region, ]
-      selectInput("userinput", "Select Subzone:",  choices = c$SUBZONE_N,selected = "")
-    }else if(input$type=="Planning Area"){
+    if(input$type=="Planning Area"){
       c <- houses_sf[houses_sf$REGION_N==input$region, ]
       selectInput("userinput", "Select Planning Area:",  choices = c$PLN_AREA_N,selected = "")
+    }else{
+      
+    }
+  })
+  
+  output$subzone <- renderUI({
+    if(input$type=="Planning Area"){
+      c <- houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]
+      selectInput("subzoneinput", "Select Subzone:",  choices = c("",c$SUBZONE_N,"View as Planning Area"),selected = "")
+      
     }else{
       
     }
@@ -364,37 +374,38 @@ server <- function(input, output) {
         if(input$type == "Region"){#AHP Region
           mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
             tm_basemap(server = NA, group = "Clear", alpha = 1) +
-            tm_shape(mpr[mpr$Name==input$region, ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
-            tm_shape(mpr[mpr$Name==input$region, ]) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
+            tm_shape(mpsz[mpsz$REGION_N==input$region, ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
+            tm_shape(mpsz[mpsz$REGION_N==input$region, ]) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
             tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) +
             tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
                     popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                  "AHP Score" = "ahp"))
           
-        }else if(input$type =="Subzone"){#AHP Subzone
-          mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
-            tm_basemap(server = NA, group = "Clear", alpha = 1) +
-            tm_shape(mpsz[mpsz$SUBZONE_N==input$userinput, ]) + 
+        }else if(input$type == "Planning Area"){#AHP Planning
+          if(input$subzoneinput == "" || input$subzoneinput == "View as Planning Area"){
+            mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+              tm_basemap(server = NA, group = "Clear", alpha = 1) +
+              tm_shape(mpa[mpa$Name==input$userinput, ]) + 
               tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
-            tm_shape(mpsz[mpsz$SUBZONE_N==input$userinput, ]) +
+              tm_shape(mpa[mpa$Name==input$userinput, ]) + 
               tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
-            tm_shape(houses_sf[houses_sf$SUBZONE_N==input$userinput, ]) +
+              tm_shape(houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]) +
               tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
                       popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                    "AHP Score" = "ahp"))
-          
-        }else if(input$type == "Planning Area"){#AHP Planning
-          
-          mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
-            tm_basemap(server = NA, group = "Clear", alpha = 1) +
-            tm_shape(mpa[mpa$Name==input$userinput, ]) + 
+          }else{
+            mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+              tm_basemap(server = NA, group = "Clear", alpha = 1) +
+              tm_shape(mpsz[mpsz$SUBZONE_N==input$subzoneinput, ]) + 
               tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
-            tm_shape(mpa[mpa$Name==input$userinput, ]) + 
+              tm_shape(mpsz[mpsz$SUBZONE_N==input$subzoneinput, ]) +
               tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
-            tm_shape(houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]) +
-             tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
-                     popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
-                                  "AHP Score" = "ahp"))
+              tm_shape(houses_sf[houses_sf$SUBZONE_N==input$subzoneinput, ]) +
+              tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
+                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                                   "AHP Score" = "ahp"))
+          }
+          
         }else{
           
         }
@@ -410,11 +421,11 @@ server <- function(input, output) {
           tm_shape(mpsz) + 
           tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
           tm_shape(houses_sf) + 
-          tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
-                  style='fixed', breaks =breaks_fac, size=0.05,
-                  palette = colour_palette,
-                  popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",title = "Min Distance to Facility",
-                               "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse='')))+
+          tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''),
+                  style='fixed', breaks = breaks_fac, size=0.05,
+                  palette = colour_palette,title = "Min Distance to Facility",
+                  popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                               "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
           tm_shape(fac_sf) + 
           tm_symbols(shape=2, size = 0.3, alpha = .5, border.col='black', col='white', scale=4/3) 
         
@@ -425,16 +436,16 @@ server <- function(input, output) {
           if(is.null(input$userinput)){
             mydata<-  tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
               tm_basemap(server = NA, group = "Clear", alpha = 1) +
-              tm_shape(mpr[mpr$Name==input$region, ]) + 
+              tm_shape(mpsz[mpsz$REGION_N==input$region, ]) + 
               tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
-              tm_shape(mpr[mpr$Name==input$region,]) + 
+              tm_shape(mpsz[mpsz$REGION_N==input$region,]) + 
               tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
               tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) + 
-              tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
-                      style='fixed', breaks =breaks_fac, size=0.05,
-                      palette = colour_palette,
-                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",title = "Min Distance to Facility",
-                                   "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse='')))+
+              tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''),
+                      style='fixed', breaks = breaks_fac, size=0.05,
+                      palette = colour_palette,title = "Min Distance to Facility",
+                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                                   "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
               tm_shape(fac_sf[fac_sf$REGION_N==input$region, ]) + 
               tm_dots(size = .1, alpha = .5, shape = facility_icon_vector[input$test][[1]]) 
             
@@ -446,10 +457,10 @@ server <- function(input, output) {
               tm_shape(mpsz[mpsz$SUBZONE_N==input$userinput,]) + 
               tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
               tm_shape(houses_sf[houses_sf$SUBZONE_N==input$userinput, ]) + 
-              tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
-                      style='fixed', breaks =breaks_fac, size=0.05,
-                      palette = colour_palette,
-                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",title = "Min Distance to Facility",
+              tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''),
+                      style='fixed', breaks = breaks_fac, size=0.05,
+                      palette = colour_palette,title = "Min Distance to Facility",
+                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                    "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
               tm_shape(fac_sf[fac_sf$SUBZONE_N==input$userinput, ])  + 
               tm_dots(size = .3, alpha = .5,shape = facility_icon_vector[input$test][[1]]) 
@@ -459,46 +470,83 @@ server <- function(input, output) {
           if(is.null(input$userinput)){
             mydata<-  tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
               tm_basemap(server = NA, group = "Clear", alpha = 1) +
-              tm_shape(mpr[mpr$Name==input$region, ]) + 
+              tm_shape(mpsz[mpsz$REGION_N==input$region, ]) + 
               tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
-              tm_shape(mpr[mpr$Name==input$region,]) + 
+              tm_shape(mpsz[mpsz$REGION_N==input$region,]) + 
               tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
               tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) + 
-              tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
+              tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''),
                       style='fixed', breaks = breaks_fac, size=0.05,
-                      palette = colour_palette,
-                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",title = "Min Distance to Facility",
+                      palette = colour_palette,title = "Min Distance to Facility",
+                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                    "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
               tm_shape(fac_sf[fac_sf$REGION_N==input$region, ]) + 
               tm_dots(size = .1, alpha = .5, shape = facility_icon_vector[input$test][[1]]) 
           }else{
-            mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
-              tm_basemap(server = NA, group = "Clear", alpha = 1) +
-              tm_shape(mpa[mpa$Name==input$userinput,]) + 
-              tm_borders(lty = "dashed",col = '#d35400',lwd = 1) +
-              tm_shape(mpa[mpa$Name==input$userinput,]) + 
-              tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
-              tm_shape(houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]) + 
-              tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''), 
-                      style='fixed', breaks =breaks_fac, size=0.05,
-                      palette = colour_palette,
-                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",title = "Min Distance to Facility",
-                                   "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
-              tm_shape(fac_sf[fac_sf$PLN_AREA_N==input$userinput, ])  + 
-              tm_dots(size = .3, alpha = .5,shape = facility_icon_vector[input$test][[1]]) 
+            if(input$subzoneinput ==""){
+              mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+                tm_basemap(server = NA, group = "Clear", alpha = 1) +
+                tm_shape(mpa[mpa$Name==input$userinput,]) + 
+                tm_borders(lty = "dashed",col = '#d35400',lwd = 1) +
+                tm_shape(mpa[mpa$Name==input$userinput,]) + 
+                tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
+                tm_shape(houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]) + 
+                tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''),
+                        style='fixed', breaks = breaks_fac, size=0.05,
+                        palette = colour_palette,title = "Min Distance to Facility",
+                        popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                                     "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
+                tm_shape(fac_sf[fac_sf$PLN_AREA_N==input$userinput, ])  + 
+                tm_dots(size = .3, alpha = .5,shape = facility_icon_vector[input$test][[1]])
+              
+            }else{
+              if(input$subzoneinput == "View as Planning Area"){
+                mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+                  tm_basemap(server = NA, group = "Clear", alpha = 1) +
+                  tm_shape(mpa[mpa$Name==input$userinput,]) + 
+                  tm_borders(lty = "dashed",col = '#d35400',lwd = 1) +
+                  tm_shape(mpa[mpa$Name==input$userinput,]) + 
+                  tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
+                  tm_shape(houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]) + 
+                  tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''),
+                          style='fixed', breaks = breaks_fac, size=0.05,
+                          palette = colour_palette,title = "Min Distance to Facility",
+                          popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                                       "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
+                  tm_shape(fac_sf[fac_sf$PLN_AREA_N==input$userinput, ])  + 
+                  tm_dots(size = .3, alpha = .5,shape = facility_icon_vector[input$test][[1]])
+                
+              }else{
+                mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+                  tm_basemap(server = NA, group = "Clear", alpha = 1) +
+                  tm_shape(mpsz[mpsz$SUBZONE_N==input$subzoneinput, ]) + 
+                  tm_borders(lty = "dashed",col = '#d35400',lwd = 1) +
+                   tm_shape(mpsz[mpsz$SUBZONE_N==input$subzoneinput,]) + 
+                   tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
+                   tm_shape(houses_sf[houses_sf$SUBZONE_N==input$subzoneinput, ]) + 
+                   tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''),
+                           style='fixed', breaks = breaks_fac, size=0.05,
+                           palette = colour_palette,title = "Min Distance to Facility",
+                           popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                                        "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
+                   tm_shape(fac_sf[fac_sf$SUBZONE_N==input$subzoneinput, ])  + 
+                   tm_dots(size = .3, alpha = .5,shape = facility_icon_vector[input$test][[1]]) 
+              }
+              
+            }
           }
         }else{
           mydata<-  tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
             tm_basemap(server = NA, group = "Clear", alpha = 1) +
-            tm_shape(mpr[mpr$Name==input$region, ]) + 
+            tm_shape(mpsz[mpsz$REGION_N==input$region, ]) + 
             tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
-            tm_shape(mpr[mpr$Name==input$region,]) + 
+            tm_shape(mpsz[mpsz$REGION_N==input$region,]) + 
             tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 3) +
             tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) + 
             tm_dots(col=paste(unlist(facility_dist_vector[input$test]), collapse=''),
                     style='fixed', breaks = breaks_fac, size=0.05,
-                    palette = colour_palette,
-                    popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",title = "Min Distance to Facility",
+                    palette = colour_palette,title = "Min Distance to Facility",
+                    popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                  "Distance" = paste(unlist(facility_dist_vector[input$test]), collapse=''))) +
             tm_shape(fac_sf[fac_sf$REGION_N==input$region, ]) + 
             tm_dots(size = .1, alpha = .5, shape = facility_icon_vector[input$test][[1]]) 
@@ -510,7 +558,7 @@ server <- function(input, output) {
   })
   
   # ### For SUBZONE Boxplot ###
-  output$sz_barchart <-  renderPlot({
+  output$sz_boxplot <-  renderPlot({
    
     houses_box_sg <- houses_sf %>% rename('distance' = paste(unlist(facility_dist_vector[input$test]), collapse=''))
     
