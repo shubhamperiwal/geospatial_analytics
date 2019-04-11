@@ -52,7 +52,7 @@ houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
 houses_sf <- st_set_crs(houses_sf, 4326)
 houses_sf <- st_transform(houses_sf, 3414)
 
-
+houses_sf$ahp <- 0
 
 
 #AHP Calculation

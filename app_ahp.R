@@ -305,8 +305,7 @@ server <- function(input, output, session) {
         column(numericInput("school_spf", "School - Police Post:", min=-9, max=9, value=9, step=1),width=4)
       ),
       fluidRow(
-        actionButton("resetAHPButton", "Reset AHP Criteria"),
-        actionButton("submitAHPButton", "Plot Accessibility Plot")
+        actionButton("resetAHPButton", "Reset AHP Criteria")
       )
     )
   })
@@ -343,7 +342,7 @@ server <- function(input, output, session) {
     updateNumericInput(session, inputId = 'hawker_spf', value = -7)
     updateNumericInput(session, inputId = 'mrt_school', value = -2)
     updateNumericInput(session, inputId = 'mrt_spf', value = -4)
-    updateNumericInput(session, inputId = 'school_spf', value = -1)
+    updateNumericInput(session, inputId = 'school_spf', value = 1)
   }
   
   observeEvent(input$resetAHPButton, {
@@ -362,12 +361,11 @@ server <- function(input, output, session) {
         tm_shape(mpsz) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
         tm_shape(mpsz) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
         tm_shape(houses_sf) +
-        tm_dots() +
+        # tm_dots() +
         tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette, title = "AHP Score",
                 popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                              "AHP Score" = "ahp"))
       
-      observeEvent(input$submitAHPButton, {
         # showNotification(type = 'error', ui = 'The criteria is not consistent')
         ##load AHP Weight
         weight_b_c <- input$bs_clinic 
@@ -405,6 +403,7 @@ server <- function(input, output, session) {
         
         if(consistency > 0.1){
           showNotification(type = 'error', ui = paste('The criteria is not consistent. Consistency: ', consistency))
+          houses_sf$ahp<- 0
         } else{
           
           showNotification(type = 'message', ui = paste('The criteria is consistent. Consistency: ', consistency))
@@ -460,7 +459,7 @@ server <- function(input, output, session) {
                                      "AHP Score" = "ahp"))
             }
         } 
-      })
+      
       
       #Not AHP
     }else{
