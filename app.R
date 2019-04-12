@@ -67,12 +67,12 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                                  column(10,
                                         radioButtons("radio", label = "Select Facility to plot:",
                                                      choices = list(
-                                                       "Clinic"= "clinics",
-                                                       "Bus Stop" = "busStop",
-                                                        "MRT-Station" = "mrt",
-                                                        "Hawker" = "hawkers",
+                                                       "Healthcare Services"= "clinics",
+                                                       "Bus Stops" = "busStop",
+                                                        "MRT-Stations" = "mrt",
+                                                        "Hawker Centers" = "hawkers",
                                                         "Schools" = "schools",
-                                                        "Singapore Police Force" = "spf",
+                                                        "Singapore Police Stations" = "spf",
                                                        "Houses" = "houses"),
                                                      selected = "clinics"))
                                ),width=3),
@@ -285,28 +285,28 @@ server <- function(input, output, session) {
       ),
       fluidRow(
         column(numericInput("bs_clinic", "Bus stop - Clinic:", min=-9, max=9, value=9, step=1),width=4),
-        column(numericInput("clinic_hawker", "Clinic - Hawker:", min=-9, max=9, value=9, step=1),width=4),
-        column(numericInput("hawker_school", "Hawker - School:", min=-9, max=9, value=9, step=1),width=4)
+        column(numericInput("clinic_hawker", "Clinic - Hawker:", min=-9, max=9, value=-3, step=1),width=4),
+        column(numericInput("hawker_school", "Hawker - School:", min=-9, max=9, value=-5, step=1),width=4)
       ),
       fluidRow(
-        column(numericInput("bs_hawker", "Bus stop - Hawker:", min=-9, max=9, value=9, step=1),width=4),
-        column(numericInput("clinic_mrt", "Clinic - MRT:", min=-9, max=9, value=9, step=1),width=4),
-        column(numericInput("hawker_spf", "Hawker - Police Post:", min=-9, max=9, value=9, step=1),width=4)
+        column(numericInput("bs_hawker", "Bus stop - Hawker:", min=-9, max=9, value=7, step=1),width=4),
+        column(numericInput("clinic_mrt", "Clinic - MRT:", min=-9, max=9, value=-5, step=1),width=4),
+        column(numericInput("hawker_spf", "Hawker - Police Post:", min=-9, max=9, value=-7, step=1),width=4)
       ),
       fluidRow(
-        column(numericInput("bs_mrt", "Bus stop - MRT:", min=-9, max=9, value=9, step=1),width=4),
-        column(numericInput("clinic_school", "Clinic - School:", min=-9, max=9, value=9, step=1),width=4),
-        column(numericInput("mrt_school", "MRT - School:", min=-9, max=9, value=9, step=1),width=4)
+        column(numericInput("bs_mrt", "Bus stop - MRT:", min=-9, max=9, value=5, step=1),width=4),
+        column(numericInput("clinic_school", "Clinic - School:", min=-9, max=9, value=-7, step=1),width=4),
+        column(numericInput("mrt_school", "MRT - School:", min=-9, max=9, value=-3, step=1),width=4)
       ),
       fluidRow(
-        column(numericInput("bs_school", "Bus stop - School:", min=-9, max=9, value=9, step=1),width=4),
-        column(numericInput("clinic_spf", "Clinic - Police Post:", min=-9, max=9, value=9, step=1),width=4),
-        column(numericInput("mrt_spf", "MRT - Police Post:", min=-9, max=9, value=9, step=1),width=4)
+        column(numericInput("bs_school", "Bus stop - School:", min=-9, max=9, value=3, step=1),width=4),
+        column(numericInput("clinic_spf", "Clinic - Police Post:", min=-9, max=9, value=-9, step=1),width=4),
+        column(numericInput("mrt_spf", "MRT - Police Post:", min=-9, max=9, value=-5, step=1),width=4)
       ),
       fluidRow(
-        column(numericInput("bs_spf", "Bus stop - Police Post:", min=-9, max=9, value=9, step=1),width=4),
-        column(numericInput("hawker_mrt", "Hawker - MRT:", min=-9, max=9, value=9, step=1),width=4),
-        column(numericInput("school_spf", "School - Police Post:", min=-9, max=9, value=9, step=1),width=4)
+        column(numericInput("bs_spf", "Bus stop - Police Post:", min=-9, max=9, value=1, step=1),width=4),
+        column(numericInput("hawker_mrt", "Hawker - MRT:", min=-9, max=9, value=-3, step=1),width=4),
+        column(numericInput("school_spf", "School - Police Post:", min=-9, max=9, value=-1, step=1),width=4)
       ),
       fluidRow(
         actionButton("resetAHPButton", "Reset AHP Criteria")
