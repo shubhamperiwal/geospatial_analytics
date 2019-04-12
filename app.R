@@ -166,7 +166,12 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                                           uiOutput("slide1"))
                                  )
                                ),
-                               br(),
+                               fluidRow(
+                                 conditionalPanel(
+                                   condition = "input.test == 'all'",
+                                   h4("*Criteria must be consistent (Consistency score < 0.1)to plot AHP plot.")
+                                 )
+                               ),
                                fluidRow(
                                  column(12,
                                         conditionalPanel(
@@ -261,7 +266,7 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                              )
                              )))
 # Define server logic ----
-server <- function(input, output) {
+server <- function(input, output, session) {
   
   output$cc <- renderUI({
     if(input$type=="Planning Area"){
@@ -289,38 +294,73 @@ server <- function(input, output) {
       ),
       fluidRow(
         column(numericInput("bs_clinic", "Bus stop - Clinic:", min=-9, max=9, value=9, step=1),width=4),
-        column(numericInput("clinic_hawker", "Clinic - Hawker:", min=-9, max=9, value=7, step=1),width=4),
-        column(numericInput("hawker_school", "Hawker - School:", min=-9, max=9, value=5, step=1),width=4)
+        column(numericInput("clinic_hawker", "Clinic - Hawker:", min=-9, max=9, value=9, step=1),width=4),
+        column(numericInput("hawker_school", "Hawker - School:", min=-9, max=9, value=9, step=1),width=4)
       ),
       fluidRow(
-        column(numericInput("bs_hawker", "Bus stop - Hawker:", min=-9, max=9, value=3, step=1),width=4),
-        column(numericInput("clinic_mrt", "Clinic - MRT:", min=-9, max=9, value=1, step=1),width=4),
-        column(numericInput("hawker_spf", "Hawker - Police Post:", min=-9, max=9, value=-3, step=1),width=4)
+        column(numericInput("bs_hawker", "Bus stop - Hawker:", min=-9, max=9, value=9, step=1),width=4),
+        column(numericInput("clinic_mrt", "Clinic - MRT:", min=-9, max=9, value=9, step=1),width=4),
+        column(numericInput("hawker_spf", "Hawker - Police Post:", min=-9, max=9, value=9, step=1),width=4)
       ),
       fluidRow(
-        column(numericInput("bs_mrt", "Bus stop - MRT:", min=-9, max=9, value=-4, step=1),width=4),
-        column(numericInput("clinic_school", "Clinic - School:", min=-9, max=9, value=-7, step=1),width=4),
-        column(numericInput("mrt_school", "MRT - School:", min=-9, max=9, value=-9, step=1),width=4)
+        column(numericInput("bs_mrt", "Bus stop - MRT:", min=-9, max=9, value=9, step=1),width=4),
+        column(numericInput("clinic_school", "Clinic - School:", min=-9, max=9, value=9, step=1),width=4),
+        column(numericInput("mrt_school", "MRT - School:", min=-9, max=9, value=9, step=1),width=4)
       ),
       fluidRow(
-        column(numericInput("bs_school", "Bus stop - School:", min=-9, max=9, value=-3, step=1),width=4),
-        column(numericInput("clinic_spf", "Clinic - Police Post:", min=-9, max=9, value=-5, step=1),width=4),
-        column(numericInput("mrt_spf", "MRT - Police Post:", min=-9, max=9, value=-6, step=1),width=4)
+        column(numericInput("bs_school", "Bus stop - School:", min=-9, max=9, value=9, step=1),width=4),
+        column(numericInput("clinic_spf", "Clinic - Police Post:", min=-9, max=9, value=9, step=1),width=4),
+        column(numericInput("mrt_spf", "MRT - Police Post:", min=-9, max=9, value=9, step=1),width=4)
       ),
       fluidRow(
-        column(numericInput("bs_spf", "Bus stop - Police Post:", min=-9, max=9, value=-7, step=1),width=4),
-        column(numericInput("hawker_mrt", "Hawker - MRT:", min=-9, max=9, value=-9, step=1),width=4),
-        column(numericInput("school_spf", "School - Police Post:", min=-9, max=9, value=-3, step=1),width=4)
+        column(numericInput("bs_spf", "Bus stop - Police Post:", min=-9, max=9, value=9, step=1),width=4),
+        column(numericInput("hawker_mrt", "Hawker - MRT:", min=-9, max=9, value=9, step=1),width=4),
+        column(numericInput("school_spf", "School - Police Post:", min=-9, max=9, value=9, step=1),width=4)
+      ),
+      fluidRow(
+        actionButton("resetAHPButton", "Reset AHP Criteria")
       )
     )
   })
   
+  resetAHP <- function(){
+    updateNumericInput(session, inputId = 'bs_clinic', value = 9)
+    updateNumericInput(session, inputId = 'bs_hawker', value = 9)
+    updateNumericInput(session, inputId = 'bs_mrt', value = 9)
+    updateNumericInput(session, inputId = 'bs_school', value = 9)
+    updateNumericInput(session, inputId = 'bs_spf', value = 9)
+    updateNumericInput(session, inputId = 'clinic_hawker', value = 9)
+    updateNumericInput(session, inputId = 'clinic_mrt', value = 9)
+    updateNumericInput(session, inputId = 'clinic_school', value = 9)
+    updateNumericInput(session, inputId = 'clinic_spf', value = 9)
+    updateNumericInput(session, inputId = 'hawker_mrt', value = 9)
+    updateNumericInput(session, inputId = 'hawker_school', value = 9)
+    updateNumericInput(session, inputId = 'hawker_spf', value = 9)
+    updateNumericInput(session, inputId = 'mrt_school', value = 9)
+    updateNumericInput(session, inputId = 'mrt_spf', value = 9)
+    updateNumericInput(session, inputId = 'school_spf', value = 9)
+  }
   
+  observeEvent(input$resetAHPButton, {
+    resetAHP()
+  })
   
   ##Display map based on user input
   output$xscore <-  renderLeaflet({
     
     if(input$test == "all"){
+      
+      #Plot base map. Wait for button to calculate AHP 
+      mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+        tm_basemap(server = NA, group = "Clear", alpha = 1) +
+        tm_shape(mpsz) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
+        tm_shape(mpsz) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
+        tm_shape(houses_sf) +
+        # tm_dots() +
+        tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette, title = "AHP Score",
+                popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                             "AHP Score" = "ahp"))
+      
       ##load AHP Weight
       weight_b_c <- input$bs_clinic 
       weight_b_h <- input$bs_hawker
@@ -352,64 +392,70 @@ server <- function(input, output) {
                                "sc_sp")
       rownames(transpose) <- "row"
       
-      ahp_mat <- transpose %>% ahp.mat(df = transpose, atts = facilities, negconvert = T) %>% head(3)
-      priorities <- ahp.indpref(ahp_mat, facilities)
+      ahp_mat <- ahp.mat(df = transpose, atts = facilities, negconvert = T)
+      consistency <- ahp.cr(ahp_mat, atts=facilities)
       
-      houses_sf$ahp<- 
-        houses_sf$min_dist_busStop*priorities$busStop + houses_sf$min_dist_clinic*priorities$clinics +
-        houses_sf$min_dist_hawker*priorities$hawkers  + houses_sf$min_dist_mrt*priorities$mrt +
-        houses_sf$min_dist_school*priorities$schools  + houses_sf$min_dist_spf*priorities$spf
-      
-      if(input$region == "WHOLE SINGAPORE" ){ #AHP Whole SG
-        mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
-          tm_basemap(server = NA, group = "Clear", alpha = 1) +
-          tm_shape(mpsz) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
-          tm_shape(mpsz) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
-          tm_shape(houses_sf) +
-          tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
-                  popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
-                               "AHP Score" = "ahp"))
-          
-      }else{
-        if(input$type == "Region"){#AHP Region
+      if(consistency > 0.1){
+        showNotification(type = 'error', ui = paste('The criteria is not consistent. Consistency: ', consistency))
+        houses_sf$ahp<- 0
+      } else{
+        showNotification(type = 'message', ui = paste('The criteria is consistent. Consistency: ', consistency))
+        priorities <- ahp.indpref(ahp_mat, facilities)
+        
+        houses_sf$ahp<- 
+          houses_sf$min_dist_busStop*priorities$busStop + houses_sf$min_dist_clinic*priorities$clinics +
+          houses_sf$min_dist_hawker*priorities$hawkers  + houses_sf$min_dist_mrt*priorities$mrt +
+          houses_sf$min_dist_school*priorities$schools  + houses_sf$min_dist_spf*priorities$spf
+        
+        if(input$region == "WHOLE SINGAPORE" ){ #AHP Whole SG
           mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
             tm_basemap(server = NA, group = "Clear", alpha = 1) +
-            tm_shape(mpsz[mpsz$REGION_N==input$region, ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
-            tm_shape(mpsz[mpsz$REGION_N==input$region, ]) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
-            tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) +
+            tm_shape(mpsz) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
+            tm_shape(mpsz) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
+            tm_shape(houses_sf) +
             tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
                     popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                  "AHP Score" = "ahp"))
-          
-        }else if(input$type == "Planning Area"){#AHP Planning
-          if(input$subzoneinput == "" || input$subzoneinput == "View as Planning Area"){
+            
+        }else if(input$type == "Region"){#AHP Region
             mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
               tm_basemap(server = NA, group = "Clear", alpha = 1) +
-              tm_shape(mpa[mpa$Name==input$userinput, ]) + 
-              tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
-              tm_shape(mpa[mpa$Name==input$userinput, ]) + 
-              tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
-              tm_shape(houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]) +
+              tm_shape(mpsz[mpsz$REGION_N==input$region, ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
+              tm_shape(mpsz[mpsz$REGION_N==input$region, ]) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
+              tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) +
               tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
                       popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                    "AHP Score" = "ahp"))
-          }else{
-            mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
-              tm_basemap(server = NA, group = "Clear", alpha = 1) +
-              tm_shape(mpsz[mpsz$SUBZONE_N==input$subzoneinput, ]) + 
-              tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
-              tm_shape(mpsz[mpsz$SUBZONE_N==input$subzoneinput, ]) +
-              tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
-              tm_shape(houses_sf[houses_sf$SUBZONE_N==input$subzoneinput, ]) +
-              tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
-                      popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
-                                   "AHP Score" = "ahp"))
+            
+          }else if(input$type == "Planning Area"){#AHP Planning
+            if(input$subzoneinput == "" || input$subzoneinput == "View as Planning Area"){
+              mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+                tm_basemap(server = NA, group = "Clear", alpha = 1) +
+                tm_shape(mpa[mpa$Name==input$userinput, ]) + 
+                tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
+                tm_shape(mpa[mpa$Name==input$userinput, ]) + 
+                tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
+                tm_shape(houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]) +
+                tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
+                        popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                                     "AHP Score" = "ahp"))
+            }else{
+              mydata <- tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
+                tm_basemap(server = NA, group = "Clear", alpha = 1) +
+                tm_shape(mpsz[mpsz$SUBZONE_N==input$subzoneinput, ]) + 
+                tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
+                tm_shape(mpsz[mpsz$SUBZONE_N==input$subzoneinput, ]) +
+                tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
+                tm_shape(houses_sf[houses_sf$SUBZONE_N==input$subzoneinput, ]) +
+                tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
+                        popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
+                                     "AHP Score" = "ahp"))
+            }
           }
-          
-        }else{
-          
+            
         }
-      }
+      
+      #Not AHP
     }else{
       if(input$region == "WHOLE SINGAPORE" ){
         fac_sf <- facility_sf_vector[input$test][[1]]

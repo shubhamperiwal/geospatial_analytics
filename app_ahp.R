@@ -366,7 +366,6 @@ server <- function(input, output, session) {
                 popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                              "AHP Score" = "ahp"))
       
-        # showNotification(type = 'error', ui = 'The criteria is not consistent')
         ##load AHP Weight
         weight_b_c <- input$bs_clinic 
         weight_b_h <- input$bs_hawker
