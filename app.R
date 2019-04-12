@@ -78,7 +78,7 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                                ),width=3),
                              mainPanel(
                                fluidRow(
-                                 column(6,h3("Facilities Spatial Distribution Chrolopleth Map")),
+                                 column(6,h3("Facility Spatial Distribution")),
                                  column(6,h3("Chrolopleth Map"))
                                ),
                                fluidRow(
@@ -97,13 +97,13 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                                br(),
                                fluidRow(
                                  selectInput("test", label="Select Facility Type:",
-                                             choices = list("Clinic"= "clinics",
-                                                            "Bus Stop" = "busStop",
-                                                            "MRT-Station" = "mrt",
-                                                            "Hawker" = "hawkers",
+                                             choices = list("Healthcare Services"= "clinics",
+                                                            "Bus Stops" = "busStop",
+                                                            "MRT-Stations" = "mrt",
+                                                            "Hawker centers" = "hawkers",
                                                             "Schools" = "schools",
-                                                            "Singapore Police Force" = "spf",
-                                                            "AHP" = "all"),
+                                                            "Singapore Police Stations" = "spf",
+                                                            "All" = "all"),
                                              selected = "clinics")
                                ),
                                br(),
@@ -117,15 +117,6 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                                                             "WEST REGION",
                                                             "WHOLE SINGAPORE"),
                                              selected = "EAST REGION")
-                               ),
-                               br(),
-                               fluidRow(
-                                 conditionalPanel(
-                                   condition = "input.test != 'all'",
-                                   selectInput("upperLimit", "Select BarChart Upper Limit", 
-                                               choices = list("5" = 5, "10" = 10,
-                                                              "15" = 15,"20" = 20,"30"=30,"50"=50), selected = 15)
-                                 )
                                ),
                                br(),
                                fluidRow(
@@ -213,12 +204,12 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                                fluidRow(
                                  column(10,
                                         radioButtons("databutton", label = "Show data of:",
-                                                     choices = list("Bus Stop" = "busStop",
-                                                                    "Clinic"= "clinics",
-                                                                    "MRT-Station" = "mrt",
-                                                                    "Hawker" = "hawkers",
+                                                     choices = list("Bus Stops" = "busStop",
+                                                                    "Healthcare Services"= "clinics",
+                                                                    "MRT-Stations" = "mrt",
+                                                                    "Hawker centers" = "hawkers",
                                                                     "Schools" = "schools",
-                                                                    "Singapore Police Force" = "spf",
+                                                                    "Singapore Police Stations" = "spf",
                                                                     "Houses" = "houses"),
                                                      selected = "busStop"))
                                ),width=3),
@@ -692,10 +683,12 @@ server <- function(input, output, session) {
       tm_basemap(server = "OpenStreetMap", group = "Street", alpha = 1) +
       tm_shape(mpsz) +
       tm_fill("count", style = "jenks", palette = 'GnBu', 
-              title = "Count in Each Subzone") +
+              title = "Count in Each Subzone",
+              popup.vars=c("Subzone: "="SUBZONE_N", "Region: "="REGION_N",
+                           "Pln Area: "="PLN_AREA_N", "Count: " = "count"))+
       tm_layout(legend.show = FALSE,title.position = c("center", "center"),
                 title.size = 20) +
-      tm_borders(lty = "dashed",col = '#192a56',lwd = 1)
+      tm_borders(lty = "dashed",col = '#192a56',lwd = 1) 
     
     tmap_leaflet(mydata)
   })
