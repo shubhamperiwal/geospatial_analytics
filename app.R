@@ -251,7 +251,7 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                                div(class = "team_member2",
                                    img(src = "Kaelyn.jpg", height = 150, width = 200,style="float:left;"),
                                    h3("Zhuo Yunying(Kaelyn)",style="margin-left: 210px;"),
-                                   p(style="margin-left: 210px;","Junior student studying Lee Kong Chain School of Business and currently double majoring in Operations Management and Analytics."),
+                                   p(style="margin-left: 210px;","Junior student studying Lee Kong Chian School of Business and currently double majoring in Operations Management and Analytics."),
                                    p(style="margin-left: 210px;","She lives and breathes data analytics.")
                                )
                              )
@@ -404,7 +404,7 @@ server <- function(input, output, session) {
             tm_shape(mpsz) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
             tm_shape(mpsz) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
             tm_shape(houses_sf) +
-            tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
+            tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "AHP score",
                     popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                  "AHP Score" = "ahp"))
             
@@ -414,7 +414,7 @@ server <- function(input, output, session) {
               tm_shape(mpsz[mpsz$REGION_N==input$region, ]) + tm_borders(lty = "dashed",col = '#d35400',lwd = 1)+
               tm_shape(mpsz[mpsz$REGION_N==input$region, ]) + tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
               tm_shape(houses_sf[houses_sf$REGION_N==input$region, ]) +
-              tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
+              tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "AHP Score",
                       popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                    "AHP Score" = "ahp"))
             
@@ -427,7 +427,7 @@ server <- function(input, output, session) {
                 tm_shape(mpa[mpa$Name==input$userinput, ]) + 
                 tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
                 tm_shape(houses_sf[houses_sf$PLN_AREA_N==input$userinput, ]) +
-                tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
+                tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "AHP Score",
                         popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                      "AHP Score" = "ahp"))
             }else{
@@ -438,7 +438,7 @@ server <- function(input, output, session) {
                 tm_shape(mpsz[mpsz$SUBZONE_N==input$subzoneinput, ]) +
                 tm_polygons(col = '#227093', alpha = 0.3, border.col = '#2f3542', lwd = 1) +
                 tm_shape(houses_sf[houses_sf$SUBZONE_N==input$subzoneinput, ]) +
-                tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "Min Distance to Facility",
+                tm_dots(col='ahp',style='quantile',size=0.05, palette = colour_palette,title = "AHP Score",
                         popup.vars=c("Address"="address", "Flat Type"="flat_type", "Town"="town",
                                      "AHP Score" = "ahp"))
             }

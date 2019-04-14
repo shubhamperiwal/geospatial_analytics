@@ -1,0 +1,117 @@
+---
+title: "Project - Schools - Raster"
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('sf', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr', 'raster')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
+houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
+houses_sf <- st_set_crs(houses_sf, 4326)
+houses_sf <- st_transform(houses_sf, 3414)
+```
+
+
+```{r}
+schools <- read_csv('data/schools/schools.csv')
+schools_sf <- st_as_sf(schools, coords = c("lon", "lat"))
+schools_sf <- st_set_crs(schools_sf, 4326)
+schools_sf <- st_transform(schools_sf, 3414)
+```
+
+```{r}
+schools_buffer <- st_buffer(houses_sf, 1000)
+schools_in_range <- st_intersection(schools_buffer, schools_sf)
+
+#Get num of houses with schools in 1km
+length(unique(schools_in_range$X1))
+
+schools_coords <- as.data.frame(st_coordinates(schools_in_range))
+schools_in_range$school_x <- schools_coords$X
+schools_in_range$school_y <- schools_coords$Y
+
+houses_coords <- as.data.frame(st_coordinates(houses_sf))
+houses_coords$X1 <- houses_sf$X1
+colnames(houses_coords) <- c("house_x", "house_y", "X1")
+
+schools_in_range_join <- inner_join(schools_in_range, houses_coords, by="X1")
+```
+
+```{r}
+#Get distance now
+
+#function to get euclidean distance between 2 points
+getDistance <- function( df ){
+  return(pointDistance(c(df$house_x, df$house_y),           
+                       c(df$school_x, df$school_y), 
+                       lonlat=FALSE))
+}
+
+#Apply function to each row
+schools_in_range_join$dist <- apply(schools_in_range_join,1,getDistance)
+
+#Group by house and keep the min distance
+houses_with_min_dist <- schools_in_range_join %>% group_by(X1) %>% summarise(min_dist_school = min(dist))
+``` 
+
+#Data about houses not within 1km of any school
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+all_house_ids <- houses$X1
+min_dist_found_ids <- houses_with_min_dist$X1
+
+min_dist_not_found_ids <- setdiff(all_house_ids, min_dist_found_ids)
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+min_dist_not_found_sf <- houses_sf[houses_sf$X1 %in% min_dist_not_found_ids,]
+
+schools_buffer_far <- st_buffer(min_dist_not_found_sf, 6000)
+schools_in_range_far <- st_intersection(schools_buffer_far, schools_sf)
+
+length(unique(schools_in_range_far$X1))
+
+schools_coords_far <- as.data.frame(st_coordinates(schools_in_range_far))
+schools_in_range_far$school_x <- schools_coords_far$X
+schools_in_range_far$school_y <- schools_coords_far$Y
+
+houses_far_coords <- as.data.frame(st_coordinates(min_dist_not_found_sf))
+houses_far_coords$X1 <- min_dist_not_found_sf$X1
+colnames(houses_far_coords) <- c("house_x", "house_y", "X1")
+
+schools_in_range_far_join <- inner_join(schools_in_range_far, houses_far_coords, by="X1")
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#function to get euclidean distance between 2 points
+getDistance <- function( df ){
+  return(pointDistance(c(df$house_x, df$house_y),           
+                       c(df$school_x, df$school_y), 
+                       lonlat=FALSE))
+}
+
+#Apply function to each row
+schools_in_range_far_join$dist <- apply(schools_in_range_far_join,1,getDistance)
+
+#Group by house and keep the min distance
+houses_with_min_dist_far <- schools_in_range_far_join %>% group_by(X1) %>% summarise(min_dist_school = min(dist))
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_all_with_min_dist <- rbind(houses_with_min_dist, houses_with_min_dist_far)
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_final <- inner_join(houses, houses_all_with_min_dist, by='X1')
+
+houses_final <- houses_final %>% dplyr::select(-geometry)
+write_csv(houses_final, 'data/resale-flat-prices/all_flats_updated.csv')
+```

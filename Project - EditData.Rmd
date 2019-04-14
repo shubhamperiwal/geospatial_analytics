@@ -1,10 +1,16 @@
 ---
-title: "Project - Phase 2"
+title: "Project - Edit Data"
 output: html_notebook
 ---
 
+This file contains the code for:
+1. Merging the facilities and houses with boundaries
+2. Changing KML files to CSVs
+3. Extracting names from description in KML files
+
+
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-packages = c('tmap', 'ggmap', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr', 'sf')
+packages = c('rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr', 'sf')
 for (p in packages){ 
   if(!require(p, character.only = T)){
     install.packages(p) 
@@ -109,9 +115,9 @@ hawkers_sf <- st_transform(hawkers_sf, 3414)
 joined_df <- st_join(hawkers_sf, mpsz_sf, join=st_intersects)
 joined_df <- na.omit(joined_df)
 st_geometry(joined_df) <- NULL
-yo <- st_coordinates(hawkers_sf)
-joined_df$lon <- yo[,1]
-joined_df$lat <- yo[,2]
+coords <- st_coordinates(hawkers_sf)
+joined_df$lon <- coords[,1]
+joined_df$lat <- coords[,2]
 
 st_write(hawkers_sf, dsn='data/hawker-centres/hawker-centres-kml-3.kml', layer='HAWKERCENTRE_3')
 write_csv(joined_df, 'data/hawker-centres/hawker-centres.csv')
@@ -129,9 +135,9 @@ joined_df <- st_join(busStops_sf, mpsz_sf, join=st_intersects)
 
 joined_df <- na.omit(joined_df)
 st_geometry(joined_df) <- NULL
-yo <- st_coordinates(busStops_sf)
-joined_df$lon <- yo[,1]
-joined_df$lat <- yo[,2]
+coords <- st_coordinates(busStops_sf)
+joined_df$lon <- coords[,1]
+joined_df$lat <- coords[,2]
 
 write_csv(joined_df, 'data/busStops/bus-stops.csv')
 ```
@@ -149,9 +155,9 @@ joined_df <- st_join(mrts_sf, mpsz_sf, join=st_intersects)
 
 joined_df <- na.omit(joined_df)
 st_geometry(joined_df) <- NULL
-yo <- st_coordinates(mrts_sf)
-joined_df$lon <- yo[,1]
-joined_df$lat <- yo[,2]
+coords <- st_coordinates(mrts_sf)
+joined_df$lon <- coords[,1]
+joined_df$lat <- coords[,2]
 
 write_csv(joined_df, 'data/mrtstation/mrt.csv')
 ```
@@ -167,9 +173,9 @@ joined_df <- st_join(spfs_sf, mpsz_sf, join=st_intersects)
 
 joined_df <- na.omit(joined_df)
 st_geometry(joined_df) <- NULL
-yo <- st_coordinates(spfs_sf)
-joined_df$lon <- yo[,1]
-joined_df$lat <- yo[,2]
+coords <- st_coordinates(spfs_sf)
+joined_df$lon <- coords[,1]
+joined_df$lat <- coords[,2]
 
 write_csv(joined_df, 'data/singapore-police-force-establishment/singapore-police-force-establishments-2018.csv')
 ```
@@ -234,11 +240,6 @@ write_csv(mrt, 'data/mrtstation/mrt.csv')
 
 ```
 
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-mrt$Description[1][[1]]
-```
-
 ```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
 spfs <- read_csv('data/singapore-police-force-establishment/spf.csv')
 spfs <- spfs %>% select(-c(Description))
@@ -250,87 +251,3 @@ write_csv(spfs, 'data/singapore-police-force-establishment/spf.csv')
 
 ```
 
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-
-```

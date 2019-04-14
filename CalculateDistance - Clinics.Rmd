@@ -1,0 +1,116 @@
+---
+title: "Project - Try RASTER"
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('sf', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr', 'raster')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
+houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
+houses_sf <- st_set_crs(houses_sf, 4326)
+houses_sf <- st_transform(houses_sf, 3414)
+```
+
+
+```{r}
+gpclinics <- read_csv('data/clinics/gpclinics.csv')
+clinics_sf <- st_as_sf(gpclinics, coords = c("lon", "lat"))
+clinics_sf <- st_set_crs(clinics_sf, 4326)
+clinics_sf <- st_transform(clinics_sf, 3414)
+clinics
+```
+
+```{r}
+clinics_buffer <- st_buffer(houses_sf, 1000)
+clinics_in_range <- st_intersection(clinics_buffer, clinics_sf)
+
+clinics_coords <- as.data.frame(st_coordinates(clinics_in_range))
+clinics_in_range$clinic_x <- clinics_coords$X
+clinics_in_range$clinic_y <- clinics_coords$Y
+
+houses_coords <- as.data.frame(st_coordinates(houses_sf))
+houses_coords$X1 <- houses_sf$X1
+colnames(houses_coords) <- c("house_x", "house_y", "X1")
+
+clinics_in_range_join <- inner_join(clinics_in_range, houses_coords, by="X1")
+```
+
+```{r}
+#Get distance now
+
+#function to get euclidean distance between 2 points
+getDistance <- function( df ){
+  return(pointDistance(c(df$house_x, df$house_y),           
+                       c(df$clinic_x, df$clinic_y), 
+                       lonlat=FALSE))
+}
+
+#Apply function to each row
+clinics_in_range_join$dist <- apply(clinics_in_range_join,1,getDistance)
+
+#Group by house and keep the min distance
+houses_with_min_dist <- clinics_in_range_join %>% group_by(X1) %>% summarise(min_dist = min(dist))
+``` 
+
+#Data about houses not within 1km of any clininc
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+all_house_ids <- houses$X1
+min_dist_found_ids <- houses_with_min_dist$X1
+
+min_dist_not_found_ids <- setdiff(all_house_ids, min_dist_found_ids)
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+min_dist_not_found_sf <- houses_sf[houses_sf$X1 %in% min_dist_not_found_ids,]
+
+clinics_buffer_far <- st_buffer(min_dist_not_found_sf, 6000)
+clinics_in_range_2km <- st_intersection(clinics_buffer_far, clinics_sf)
+
+length(unique(clinics_in_range_2km$X1))
+
+clinics_coords <- as.data.frame(st_coordinates(clinics_in_range_2km))
+clinics_in_range_2km$clinic_x <- clinics_coords$X
+clinics_in_range_2km$clinic_y <- clinics_coords$Y
+
+houses_far_coords <- as.data.frame(st_coordinates(min_dist_not_found_sf))
+houses_far_coords$X1 <- min_dist_not_found_sf$X1
+colnames(houses_far_coords) <- c("house_x", "house_y", "X1")
+
+clinics_in_range_2km_join <- inner_join(clinics_in_range_2km, houses_far_coords, by="X1")
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#function to get euclidean distance between 2 points
+getDistance <- function( df ){
+  return(pointDistance(c(df$house_x, df$house_y),           
+                       c(df$clinic_x, df$clinic_y), 
+                       lonlat=FALSE))
+}
+
+#Apply function to each row
+clinics_in_range_2km_join$dist <- apply(clinics_in_range_2km_join,1,getDistance)
+
+#Group by house and keep the min distance
+houses_with_min_dist_far <- clinics_in_range_2km_join %>% group_by(X1) %>% summarise(min_dist = min(dist))
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_all_with_min_dist <- rbind(houses_with_min_dist, houses_with_min_dist_far)
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_final <- inner_join(houses, houses_all_with_min_dist, by='X1')
+names(houses_final)[names(houses_final) == 'min_dist'] <- 'min_dist_clinic'
+
+houses_final <- houses_final %>% dplyr::select(-geometry)
+write_csv(houses_final, 'data/resale-flat-prices/all_flats_updated.csv')
+```

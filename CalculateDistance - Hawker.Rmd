@@ -1,0 +1,119 @@
+---
+title: "Calculate distance from Hawker Centres"
+---
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+packages = c('sf', 'rgdal', 'tidyverse', 'qdapTools', 'spatstat', 'readr', 'raster')
+for (p in packages){ 
+  if(!require(p, character.only = T)){
+    install.packages(p) 
+  }
+  library(p,character.only = T) 
+}
+```
+
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses <- read_csv('data/resale-flat-prices/finalCSVforplots.csv')
+houses_sf <- st_as_sf(houses, coords = c("lon", "lat"))
+houses_sf <- st_set_crs(houses_sf, 4326)
+houses_sf <- st_transform(houses_sf, 3414)
+```
+
+
+```{r}
+ogrListLayers(dsn='data/hawker-centres/hawker-centres-kml.kml')
+hawkers <- readOGR(dsn='data/hawker-centres/hawker-centres-kml.kml', layer='HAWKERCENTRE')
+hawkers_sf <- st_as_sf(hawkers)
+hawkers_sf <- st_set_crs(hawkers_sf, 4326)
+hawkers_sf <- st_transform(hawkers_sf, 3414)
+```
+
+```{r}
+hawkers_buffer <- st_buffer(houses_sf, 2000)
+hawkers_in_range <- st_intersection(hawkers_buffer, hawkers_sf)
+
+#Get num of houses with hawkers in 2km
+length(unique(hawkers_in_range$X1))
+
+hawkers_coords <- as.data.frame(st_coordinates(hawkers_in_range))
+hawkers_in_range$hawker_x <- hawkers_coords$X
+hawkers_in_range$hawker_y <- hawkers_coords$Y
+
+houses_coords <- as.data.frame(st_coordinates(houses_sf))
+houses_coords$X1 <- houses_sf$X1
+colnames(houses_coords) <- c("house_x", "house_y", "X1")
+
+hawkers_in_range_join <- inner_join(hawkers_in_range, houses_coords, by="X1")
+```
+
+```{r}
+#Get distance now
+
+#function to get euclidean distance between 2 points
+getDistance <- function( df ){
+  return(pointDistance(c(df$house_x, df$house_y),           
+                       c(df$hawker_x, df$hawker_y), 
+                       lonlat=FALSE))
+}
+
+#Apply function to each row
+hawkers_in_range_join$dist <- apply(hawkers_in_range_join,1,getDistance)
+
+#Group by house and keep the min distance
+houses_with_min_dist <- hawkers_in_range_join %>% group_by(X1) %>% summarise(min_dist_hawker = min(dist))
+``` 
+
+#Data about houses not within 1km of any hawker
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+all_house_ids <- houses$X1
+min_dist_found_ids <- houses_with_min_dist$X1
+
+min_dist_not_found_ids <- setdiff(all_house_ids, min_dist_found_ids)
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+min_dist_not_found_sf <- houses_sf[houses_sf$X1 %in% min_dist_not_found_ids,]
+
+hawkers_buffer_far <- st_buffer(min_dist_not_found_sf, 9000)
+hawkers_in_range_far <- st_intersection(hawkers_buffer_far, hawkers_sf)
+
+length(unique(hawkers_in_range_far$X1))
+
+hawkers_coords_far <- as.data.frame(st_coordinates(hawkers_in_range_far))
+hawkers_in_range_far$hawker_x <- hawkers_coords_far$X
+hawkers_in_range_far$hawker_y <- hawkers_coords_far$Y
+
+houses_far_coords <- as.data.frame(st_coordinates(min_dist_not_found_sf))
+houses_far_coords$X1 <- min_dist_not_found_sf$X1
+colnames(houses_far_coords) <- c("house_x", "house_y", "X1")
+
+hawkers_in_range_far_join <- inner_join(hawkers_in_range_far, houses_far_coords, by="X1")
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+#function to get euclidean distance between 2 points
+getDistance <- function( df ){
+  return(pointDistance(c(df$house_x, df$house_y),           
+                       c(df$hawker_x, df$hawker_y), 
+                       lonlat=FALSE))
+}
+
+#Apply function to each row
+hawkers_in_range_far_join$dist <- apply(hawkers_in_range_far_join,1,getDistance)
+
+#Group by house and keep the min distance
+houses_with_min_dist_far <- hawkers_in_range_far_join %>% group_by(X1) %>% summarise(min_dist_hawker = min(dist))
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_all_with_min_dist <- rbind(houses_with_min_dist, houses_with_min_dist_far)
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+houses_final <- inner_join(houses, houses_all_with_min_dist, by='X1')
+
+houses_final <- houses_final %>% dplyr::select(-geometry)
+write_csv(houses_final, 'data/resale-flat-prices/all_flats_updated.csv')
+```
